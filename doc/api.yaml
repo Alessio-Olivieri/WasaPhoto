@@ -211,7 +211,7 @@ paths:
         required: true
     delete:
       tags: ['user', 'follow']
-      summary: deletes the user from the followers likst
+      summary: deletes the user from the following list
       operationId: removeFollower
       responses:
         "200":
@@ -332,31 +332,33 @@ components:
     
     commentid:
       type: string
-      
-    like:
-      type: object
-      properties:
-        from:
-          $ref: '#/components/schemas/userid'
-        photoId:
-          $ref: '#/components/schemas/photoid'
           
-  
     userid:  
       type: object
       properties:
         name:
           type: string
           example: Maria
-          pattern: 'ˆ.*?$'
+          pattern: '^.*?$'
           minLength: 3
           maxLength: 16
+
+    like:
+      type: object
+      properties:
+        user:
+          description: the user who puts like
+          $ref: '#/components/schemas/userid'
+        photoId:
+          description: the photo the like is related to
+          $ref: '#/components/schemas/photoid'
     
     comment:
       type: object
       example: "Che bella foto!!!"
       properties:
         user:
+          description: the use who puts the comment
           $ref: '#/components/schemas/userid'
         content:
           type: string
@@ -393,5 +395,4 @@ components:
         - image
         - user
         - date
-        - likeCount
-        
+        - likecount
