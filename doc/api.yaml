@@ -28,15 +28,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/userid'
-                
 
-  /users/{userid}:
-    parameters:
-      - $ref: '#/components/parameters/userid'
+  /users/{userid}/mystream/:
     get:
-      tags: ['user']
-      summary: ask for the profile of the user, specified by userid
-      operationId: getProfileUser 
+      summary: ask for the stream of the user, specified by userid
+      operationId: getMyStream 
       responses:
         '200':
           description: return the photos of all the following in reverse chronological order
@@ -46,7 +42,52 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/photoid'        
-        #Not authorized
+        "401":
+          description: you're not authorized to view the stream
+                
+
+  /users/{userid}:
+    parameters:
+      - $ref: '#/components/parameters/userid'
+    put:
+      tags: ['user', 'profile']
+      summary: creates or updates user details
+      description: allows to modify username, and other details
+      operationId: setMyUserName
+      requestBody:
+        description: the new identificative
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/userid'
+      responses:
+        '200':
+          description: update successfull
+        '204':
+          description: for not updating, rewrite the same username
+        '400':
+          description: bad request
+        '401': 
+          description: unauthorized to change user name
+        '409':
+          description:  user already exists, choose another name
+    get:
+      tags: ['user', 'profile']
+      summary: ask for the profile of the user, specified by userid
+      operationId: getProfileUser 
+      responses:
+        '200':
+          description: return the photos of the user in reverse chronological order
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/photoid'        
+        "401":
+          description: you're not authorized to view the profile
+        "404":
+          description: user not found
     
   /users/{userid}/photos:
     parameters:
@@ -69,6 +110,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/photoid'
+        "401":
+          description: you're not authorized to add the photo
 
     delete:
       tags: ['photo', 'user']
@@ -83,6 +126,10 @@ paths:
       responses:
         "200":
           description: succesfull operation
+        "401":
+          description: you're not authorized to delete the photo
+        "404":
+          description: the photo does not exists
 
     
   /users/{userid}/photos/{photoid}/comments:
@@ -107,6 +154,8 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/commentid'
+          "401":
+            description: you're not authorized to post the comment
 
       delete:
         tags: ['user', "photo", 'comment']
@@ -122,6 +171,10 @@ paths:
         responses:
           "200":
             description: succesfull operation
+          "404":
+            description: comment not found
+          "401":
+            description: you're not authorized to remove the comment
 
 
   /users/{userid}/photos/{photoid}/likes:
@@ -132,17 +185,14 @@ paths:
       tags: ['user', "photo", 'like']
       summary: likes the picture, returns '200' if the picture is already liked
       operationId: likePhoto
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/userid'
-        required: true
       responses:
         '201':
           description: succesfull operation, returns id of the like
         '200':
           description: like already exists (idempotent request)
+        "401":
+          description: you're not authorized to add the like
+
     delete:
       tags: ['user', 'photo', 'like']
       summary: unlikes the photo
@@ -155,6 +205,12 @@ paths:
       responses:
         "200":
           description: succesfull operation
+        "204":
+          description: the like is not present
+        "404":
+          description: user not found
+        "401":
+          description: you're not authorized to remove the like
 
           
   /users/{userid}/followers/:
@@ -173,7 +229,14 @@ paths:
       responses:
         "200":
           description: succesfull operation
-    put:
+        "204":
+          description: the user is not present in the followers
+        "404":
+          description: user not found
+        "401":
+          description: you're not authorized to remove the user
+
+    post:
       tags: ['user', 'follow']
       summary: add a user to the follower list
       requestBody:
@@ -183,8 +246,15 @@ paths:
               $ref: '#/components/schemas/userid'
         required: true
       responses:
-        '201':
-          description: user added succesfully
+        "201":
+          description: succesfull operation
+        '200':
+          description: user already in the followed list
+        "404":
+          description: user not found
+        "401":
+          description: you're not authorized to add the user
+
   
   /users/{userid}/following/:
     parameters:
@@ -201,9 +271,13 @@ paths:
         required: true
       responses:
         '201':
-          description: user followed succesfully
+          description: user added to followings succesfully
         '200':
           description: user already in the following list
+        '404':
+          description: user not found
+        "401":
+          description: you're not authorized to add the user
     delete:
       tags: ['user', 'follow']
       summary: deletes the user from the followers likst
@@ -215,8 +289,15 @@ paths:
               $ref: '#/components/schemas/userid'
         required: true
       responses:
-        "200":
-          description: succesfull operation
+        '201':
+          description: user removed from followings succesfully
+        '200':
+          description: user not in the following list
+        '404':
+          description: user not found
+        "401":
+          description: you're not authorized to remove the user
+
 
   
   /users/{userid}/banned/:
@@ -234,9 +315,13 @@ paths:
         required: true
       responses:
         '201':
-          description: user followed succesfully
+          description: user banned succesfully
         '200':
-          description: user already in the following list
+          description: user already in the banned list
+        '404':
+          description: user not found
+        "401":
+          description: you're not authorized to ban the user
     delete:
       tags: ['ban', 'user']
       summary: unbans the user
@@ -248,8 +333,14 @@ paths:
               $ref: '#/components/schemas/userid'
         required: true
       responses:
-        "200":
-          description: succesfull operation
+        '201':
+          description: user unbanned succesfully
+        '200':
+          description: user not in the banned list
+        '404':
+          description: user not found
+        "401":
+          description: you're not authorized to remove the user
 
 
 components:
