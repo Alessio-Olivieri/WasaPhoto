@@ -29,10 +29,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/userid'
 
-  /mystream/:
+  /home:
     get:
       tags: ["user", "mystream"]
-      summary: ask for the stream of the user, specified by userid
+      summary: ask for the stream of the user, specified by userid which is inferred by auth token 
       operationId: getMyStream 
       responses:
         '200':
