@@ -29,27 +29,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/userid'
                 
-  /users:
-    get:
-      tags: ['user']
-      summary: Returns a list of users.
-      responses:
-        '200':
-          description: A JSON array of user names
-          content:
-            application/json:
-              schema: 
-                type: array
-                items: 
-                  type: string
-                  
+
   /users/{userid}:
     parameters:
       - $ref: '#/components/parameters/userid'
     get:
       tags: ['user']
-      summary: ask for the mainstream of the userid
-      operationId: getMyStream
+      summary: ask for the profile of the user, specified by userid
+      operationId: getProfileUser 
       responses:
         '200':
           description: return the photos of all the following in reverse chronological order
@@ -58,7 +45,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/photo'
+                  $ref: '#/components/schemas/photoid'        
+        #Not authorized
     
   /users/{userid}/photos:
     parameters:
@@ -70,7 +58,7 @@ paths:
       requestBody:
         description: the photo to be uploaded
         content:
-          application/json:
+          multipath/form:
             schema:
               $ref: '#/components/schemas/photo'
         required: true
@@ -81,18 +69,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/photoid'
-  
-  /users/{userid}/photos/{photoid}:
-    parameters:
-      - $ref: '#/components/parameters/userid'
-      - $ref: '#/components/parameters/photoid'
+
     delete:
       tags: ['photo', 'user']
       summary: deletes the photo
       operationId: deletePhoto
+      requestBody:
+        description: the unique identificative of the photo to be deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/photoid'
       responses:
         "200":
           description: succesfull operation
+
     
   /users/{userid}/photos/{photoid}/comments:
       parameters:
@@ -116,37 +107,22 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/commentid'
-                  
-  /users/{userid}/photos/{photoid}/comments/{commentid}:
-    parameters:
-      - $ref: '#/components/parameters/userid'
-      - $ref: '#/components/parameters/photoid'
-      - $ref: '#/components/parameters/commentid'
-    delete:
-      tags: ['user', "photo", 'comment']
-      summary: deletes the comment
-      operationId: uncommentPhoto
-      responses:
-        "200":
-          description: succesfull operation
-    put:
-      tags: ['user', "photo", 'comment']
-      summary: modifies the comment
-      operationId: modifyComment
-      requestBody:
-        description: the new comment
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/comment'
-        required: true
-      responses:
-        '200':
-          description: succesfull operation, returns id of the comment
+
+      delete:
+        tags: ['user', "photo", 'comment']
+        summary: deletes the comment
+        operationId: uncommentPhoto
+        requestBody:
+          description: the id of the comment to be deleted
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/commentid'
+          required: true
+        responses:
+          "200":
+            description: succesfull operation
+
 
   /users/{userid}/photos/{photoid}/likes:
     parameters:
@@ -167,28 +143,39 @@ paths:
           description: succesfull operation, returns id of the like
         '200':
           description: like already exists (idempotent request)
-  
-
-  /users/{userid}/photos/{photoid}/likes/{likeid}:
-    parameters:
-      - $ref: '#/components/parameters/userid'
-      - $ref: '#/components/parameters/photoid'
-      - $ref: '#/components/parameters/likeid'
     delete:
       tags: ['user', 'photo', 'like']
       summary: unlikes the photo
       operationId: unlikePhoto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userid'
       responses:
         "200":
           description: succesfull operation
 
-  /users/{userid}/followers:
+          
+  /users/{userid}/followers/:
     parameters:
-      - $ref: '#/components/parameters/userid' 
-    post:
+      - $ref: '#/components/parameters/userid'
+    delete:
       tags: ['user', 'follow']
-      summary: add a user to the follower list, returns '200' if the user is already a follower
-      operationId: addFollower
+      summary: deletes the user from the following list
+      operationId: removeFollower
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userid'
+        required: true
+      responses:
+        "200":
+          description: succesfull operation
+    put:
+      tags: ['user', 'follow']
+      summary: add a user to the follower list
       requestBody:
         content:
           application/json:
@@ -198,26 +185,8 @@ paths:
       responses:
         '201':
           description: user added succesfully
-        '200':
-          description: the user already exists in the followwers list
-          
-  /users/{userid}/followers/{followinguser}:
-    parameters:
-      - $ref: '#/components/parameters/userid'
-      - in: path
-        name: followinguser
-        schema:
-          $ref: '#/components/parameters/userid'
-        required: true
-    delete:
-      tags: ['user', 'follow']
-      summary: deletes the user from the following list
-      operationId: removeFollower
-      responses:
-        "200":
-          description: succesfull operation
   
-  /users/{userid}/following:
+  /users/{userid}/following/:
     parameters:
       - $ref: '#/components/parameters/userid' 
     post:
@@ -235,24 +204,22 @@ paths:
           description: user followed succesfully
         '200':
           description: user already in the following list
-
-  /users/{userid}/following/{followinguser}:
-    parameters:
-      - $ref: '#/components/parameters/userid'
-      - in: path
-        name: followinguser
-        schema:
-          $ref: '#/components/parameters/userid'
-        required: true
     delete:
       tags: ['user', 'follow']
       summary: deletes the user from the followers likst
       operationId: unfollowUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userid'
+        required: true
       responses:
         "200":
           description: succesfull operation
+
   
-  /users/{userid}/banned:
+  /users/{userid}/banned/:
     parameters:
       - $ref: '#/components/parameters/userid' 
     post:
@@ -270,23 +237,19 @@ paths:
           description: user followed succesfully
         '200':
           description: user already in the following list
-  
-  /users/{userid}/banned/{banneduser}:
-    parameters:
-      - $ref: '#/components/parameters/userid'
-      - in: path
-        name: banneduser
-        schema:
-          $ref: '#/components/parameters/userid'
-        required: true
     delete:
       tags: ['ban', 'user']
       summary: unbans the user
       operationId: unbanUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userid'
+        required: true
       responses:
         "200":
           description: succesfull operation
-
 
 
 components:
@@ -322,32 +285,35 @@ components:
       description: identificative of the like (the username of the person who put like)
       required: true
       schema:
-        $ref: '#/components/schemas/like'
+        $ref: '#/components/schemas/userid'
         
         
   schemas:
   
     photoid:
       type: string
+      example: fneornf123
+      minLength: 3
+      maxLength: 16
     
     commentid:
       type: string
-          
+      example: fneornf123
+      minLength: 3
+      maxLength: 16
+      
     userid:  
-      type: object
-      properties:
-        name:
-          type: string
-          example: Maria
-          pattern: '^.*?$'
-          minLength: 3
-          maxLength: 16
+      type: string
+      example: Maria
+      pattern: '^.*?$'
+      minLength: 3
+      maxLength: 16
 
     like:
       type: object
       properties:
         user:
-          description: the user who puts like
+          description: the user who puts like (it is the same of likeid)
           $ref: '#/components/schemas/userid'
         photoId:
           description: the photo the like is related to
