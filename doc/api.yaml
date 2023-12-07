@@ -31,6 +31,7 @@ paths:
 
   /users/{userid}/mystream/:
     get:
+      tags: ["user", "mystream"]
       summary: ask for the stream of the user, specified by userid
       operationId: getMyStream 
       responses:
