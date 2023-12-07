@@ -64,8 +64,6 @@ paths:
       responses:
         '200':
           description: update successfull
-        '204':
-          description: for not updating, rewrite the same username
         '400':
           description: bad request
         '401': 
@@ -89,6 +87,7 @@ paths:
           description: you're not authorized to view the profile
         "404":
           description: user not found
+    #delete: do delete a user profile
     
   /users/{userid}/photos:
     parameters:
@@ -100,7 +99,7 @@ paths:
       requestBody:
         description: the photo to be uploaded
         content:
-          multipath/form:
+          multipart/form-data:
             schema:
               $ref: '#/components/schemas/photo'
         required: true
@@ -119,7 +118,7 @@ paths:
       summary: deletes the photo
       operationId: deletePhoto
       requestBody:
-        description: the unique identificative of the photo to be deleted
+        description: the id of the photo to be deleted
         content:
           application/json:
             schema:
