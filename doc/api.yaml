@@ -29,7 +29,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/userid'
 
-  /users/{userid}/mystream/:
+  /mystream/:
     get:
       tags: ["user", "mystream"]
       summary: ask for the stream of the user, specified by userid
@@ -183,7 +183,9 @@ paths:
       - $ref: '#/components/parameters/photoid'
     post:
       tags: ['user', "photo", 'like']
+
       summary: likes the picture, returns '200' if the picture is already liked
+      description: the logged user likes the picture, returns '200' if the picture is already liked
       operationId: likePhoto
       responses:
         '201':
@@ -196,12 +198,13 @@ paths:
     delete:
       tags: ['user', 'photo', 'like']
       summary: unlikes the photo
+      description: remove the like of user in request body from the photo of the user in path
       operationId: unlikePhoto
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userid'
+              $ref: '#/components/schemas/userid2'
       responses:
         "200":
           description: succesfull operation
@@ -218,13 +221,13 @@ paths:
       - $ref: '#/components/parameters/userid'
     delete:
       tags: ['user', 'follow']
-      summary: deletes the user from the following list
+      summary: deletes the user (requestbody) from the following list of user (path)
       operationId: removeFollower
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userid'
+              $ref: '#/components/schemas/userid2'
         required: true
       responses:
         "200":
@@ -238,12 +241,12 @@ paths:
 
     post:
       tags: ['user', 'follow']
-      summary: add a user to the follower list
+      summary: add a user (requestbody) to the follower list of the user (path)
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userid'
+              $ref: '#/components/schemas/userid2'
         required: true
       responses:
         "201":
@@ -261,13 +264,12 @@ paths:
       - $ref: '#/components/parameters/userid' 
     post:
       tags: ['user', 'follow']
-      summary: add a user to the following list, returns '200' if the user is alrady followed
-      operationId: followUser
+      summary: add a user (requestbody) to the following list of the user (path)
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userid'
+              $ref: '#/components/schemas/userid2'
         required: true
       responses:
         '201':
@@ -280,13 +282,12 @@ paths:
           description: you're not authorized to add the user
     delete:
       tags: ['user', 'follow']
-      summary: deletes the user from the followers likst
-      operationId: unfollowUser
+      summary: removes a user (requestbody) from the following list of the user (path)
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userid'
+              $ref: '#/components/schemas/userid2'
         required: true
       responses:
         '201':
@@ -305,13 +306,12 @@ paths:
       - $ref: '#/components/parameters/userid' 
     post:
       tags: ['ban', 'user']
-      summary: add a user to the banned list, returns '200' if the user is alrady banned
-      operationId: banUser
+      summary: add a user (requestbody) to the banned list of the user (path)
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userid'
+              $ref: '#/components/schemas/userid2'
         required: true
       responses:
         '201':
@@ -322,15 +322,16 @@ paths:
           description: user not found
         "401":
           description: you're not authorized to ban the user
+          
     delete:
       tags: ['ban', 'user']
-      summary: unbans the user
       operationId: unbanUser
+      summary: removes a user (requestbody) from the banned list of the user (path)
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userid'
+              $ref: '#/components/schemas/userid2'
         required: true
       responses:
         '201':
@@ -400,6 +401,20 @@ components:
       minLength: 3
       maxLength: 16
 
+    userid2:
+      description: |
+        it is used so that the user in the path can interact
+        with another user (in the request body)
+      $ref: '#/components/schemas/likeid'
+
+    
+    likeid:
+      description: photoid+userid concatenation
+      type: string
+      example: Mariafneornf123
+      minLength: 6
+      maxLength: 32
+
     like:
       type: object
       properties:
@@ -409,6 +424,8 @@ components:
         photoId:
           description: the photo the like is related to
           $ref: '#/components/schemas/photoid'
+        likeid:
+          $ref: '#/components/schemas/likeid'
     
     comment:
       type: object
