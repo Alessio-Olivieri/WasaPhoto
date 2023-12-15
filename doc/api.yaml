@@ -45,7 +45,10 @@ paths:
                   $ref: '#/components/schemas/photoid'        
         "401":
           description: you're not authorized to view the stream
-                
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'                
 
   /users/{userid}:
     parameters:
@@ -64,12 +67,29 @@ paths:
       responses:
         '200':
           description: update successfull
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userid'
+
         '400':
           description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
         '401': 
           description: unauthorized to change user name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
         '409':
           description:  user already exists, choose another name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
     get:
       tags: ['user', 'profile']
       summary: ask for the profile of the user, specified by userid
@@ -85,8 +105,16 @@ paths:
                   $ref: '#/components/schemas/photoid'        
         "401":
           description: you're not authorized to view the profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
         "404":
           description: user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
     #delete: do delete a user profile
     
   /users/{userid}/photos:
@@ -104,7 +132,7 @@ paths:
               $ref: '#/components/schemas/photo'
         required: true
       responses:
-        '200':
+        '201':
           description: succesfull operation, returns the id of the new photo
           content:
             application/json:
@@ -112,6 +140,11 @@ paths:
                 $ref: '#/components/schemas/photoid'
         "401":
           description: you're not authorized to add the photo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
+          
 
     delete:
       tags: ['photo', 'user']
@@ -124,13 +157,14 @@ paths:
             schema:
               $ref: '#/components/schemas/photoid'
       responses:
-        "200":
-          description: succesfull operation
+        "204":
+          description: photo deleted or photo already didn't exist
         "401":
           description: you're not authorized to delete the photo
-        "404":
-          description: the photo does not exists
-
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
     
   /users/{userid}/photos/{photoid}/comments:
       parameters:
@@ -148,7 +182,7 @@ paths:
                 $ref: '#/components/schemas/comment'
           required: true
         responses:
-          '200':
+          '201':
             description: succesfull operation, returns id of the comment
             content:
               application/json:
@@ -156,6 +190,10 @@ paths:
                   $ref: '#/components/schemas/commentid'
           "401":
             description: you're not authorized to post the comment
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'  
 
       delete:
         tags: ['user', "photo", 'comment']
@@ -169,12 +207,14 @@ paths:
                 $ref: '#/components/schemas/commentid'
           required: true
         responses:
-          "200":
-            description: succesfull operation
-          "404":
-            description: comment not found
+          "204":
+            description: comment deleted or comment didn't exist
           "401":
             description: you're not authorized to remove the comment
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
 
 
   /users/{userid}/photos/{photoid}/likes:
@@ -189,11 +229,23 @@ paths:
       operationId: likePhoto
       responses:
         '201':
-          description: succesfull operation, returns id of the like
+          description: like created returns id of the like
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likeid'
         '200':
-          description: like already exists (idempotent request)
+          description: like already exists, returns id of the like
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likeid'
         "401":
           description: you're not authorized to add the like
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
 
     delete:
       tags: ['user', 'photo', 'like']
@@ -206,14 +258,14 @@ paths:
             schema:
               $ref: '#/components/schemas/userid2'
       responses:
-        "200":
-          description: succesfull operation
         "204":
-          description: the like is not present
-        "404":
-          description: user not found
+          description: like deleted (or the like is not present)
         "401":
           description: you're not authorized to remove the like
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
 
           
   /users/{userid}/followers/:
@@ -230,14 +282,14 @@ paths:
               $ref: '#/components/schemas/userid2'
         required: true
       responses:
-        "200":
-          description: succesfull operation
         "204":
-          description: the user is not present in the followers
-        "404":
-          description: user not found
+          description: user removed from follower list (or user not in the followers list)
         "401":
           description: you're not authorized to remove the user
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
 
     post:
       tags: ['user', 'follow']
@@ -250,13 +302,29 @@ paths:
         required: true
       responses:
         "201":
-          description: succesfull operation
+          description: user added to followers
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userid2'
         '200':
-          description: user already in the followed list
+          description: user already in the followers list
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userid2'
         "404":
           description: user not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         "401":
           description: you're not authorized to add the user
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
 
   
   /users/{userid}/following/:
@@ -274,12 +342,28 @@ paths:
       responses:
         '201':
           description: user added to followings succesfully
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userid2'
         '200':
           description: user already in the following list
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userid2'
         '404':
           description: user not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         "401":
           description: you're not authorized to add the user
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
     delete:
       tags: ['user', 'follow']
       summary: removes a user (requestbody) from the following list of the user (path)
@@ -290,14 +374,20 @@ paths:
               $ref: '#/components/schemas/userid2'
         required: true
       responses:
-        '201':
-          description: user removed from followings succesfully
-        '200':
-          description: user not in the following list
+        '204':
+          description: user removed from followings succesfully (or it wasn't there)
         '404':
           description: user not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         "401":
           description: you're not authorized to remove the user
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
 
 
   
@@ -314,14 +404,25 @@ paths:
               $ref: '#/components/schemas/userid2'
         required: true
       responses:
-        '201':
-          description: user banned succesfully
         '200':
-          description: user already in the banned list
+          description: user banned succesfully (or already in banned list[idempotend request])
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userid2'
         '404':
           description: user not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         "401":
           description: you're not authorized to ban the user
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+
           
     delete:
       tags: ['ban', 'user']
@@ -334,14 +435,20 @@ paths:
               $ref: '#/components/schemas/userid2'
         required: true
       responses:
-        '201':
-          description: user unbanned succesfully
-        '200':
-          description: user not in the banned list
+        '204':
+          description: user unbanned succesfully (or it wasn't present)
         '404':
           description: user not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
         "401":
           description: you're not authorized to remove the user
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
 
 
 components:
@@ -470,3 +577,11 @@ components:
         - user
         - date
         - likecount
+    
+    error:
+      type: object 
+      properties:
+        error:
+          type: string
+        message:
+          type: string
