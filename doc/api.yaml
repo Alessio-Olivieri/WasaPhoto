@@ -509,10 +509,7 @@ components:
       maxLength: 16
 
     userid2:
-      description: |
-        it is used so that the user in the path can interact
-        with another user (in the request body)
-      $ref: '#/components/schemas/likeid'
+      $ref: '#/components/schemas/userid'
 
     
     likeid:
@@ -526,10 +523,8 @@ components:
       type: object
       properties:
         user:
-          description: the user who puts like (it is the same of likeid)
           $ref: '#/components/schemas/userid'
         photoId:
-          description: the photo the like is related to
           $ref: '#/components/schemas/photoid'
         likeid:
           $ref: '#/components/schemas/likeid'
@@ -539,7 +534,6 @@ components:
       example: "Che bella foto!!!"
       properties:
         user:
-          description: the use who puts the comment
           $ref: '#/components/schemas/userid'
         content:
           type: string
