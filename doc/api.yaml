@@ -3,7 +3,7 @@ info:
   title: WasaPhoto
   description: |
     API for the project the course of WASA
-  version: 0.0.1
+  version: 0.0.2
 paths:
   /session:
     post:
@@ -115,7 +115,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'  
-    #delete: do delete a user profile
+
     
   /users/{userid}/photos:
     parameters:
@@ -145,17 +145,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'  
           
-
+  /users/{userid}/photos/{photoid}:
+    parameters:
+      - $ref: '#/components/parameters/userid'
+      - $ref: '#/components/parameters/photoid'
     delete:
       tags: ['photo', 'user']
       summary: deletes the photo
       operationId: deletePhoto
-      requestBody:
-        description: the id of the photo to be deleted
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/photoid'
       responses:
         "204":
           description: photo deleted or photo already didn't exist
@@ -195,17 +192,16 @@ paths:
                 schema:
                   $ref: '#/components/schemas/error'  
 
+
+  /users/{userid}/photos/{photoid}/comments/{commentid}:
+      parameters:
+        - $ref: '#/components/parameters/userid'
+        - $ref: '#/components/parameters/photoid'
+        - $ref: '#/components/parameters/commentid'
       delete:
         tags: ['user', "photo", 'comment']
         summary: deletes the comment
         operationId: uncommentPhoto
-        requestBody:
-          description: the id of the comment to be deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commentid'
-          required: true
         responses:
           "204":
             description: comment deleted or comment didn't exist
@@ -247,16 +243,16 @@ paths:
                 schema:
                   $ref: '#/components/schemas/error'
 
+  /users/{userid}/photos/{photoid}/likes/{likeid}:
+    parameters:
+      - $ref: '#/components/parameters/userid'
+      - $ref: '#/components/parameters/photoid'
+      - $ref: '#/components/parameters/likeid'
     delete:
       tags: ['user', 'photo', 'like']
       summary: unlikes the photo
       description: remove the like of user in request body from the photo of the user in path
       operationId: unlikePhoto
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/userid2'
       responses:
         "204":
           description: like deleted (or the like is not present)
@@ -271,26 +267,6 @@ paths:
   /users/{userid}/followers/:
     parameters:
       - $ref: '#/components/parameters/userid'
-    delete:
-      tags: ['user', 'follow']
-      summary: deletes the user (requestbody) from the following list of user (path)
-      operationId: removeFollower
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/userid2'
-        required: true
-      responses:
-        "204":
-          description: user removed from follower list (or user not in the followers list)
-        "401":
-          description: you're not authorized to remove the user
-          content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/error'
-
     post:
       tags: ['user', 'follow']
       summary: add a user (requestbody) to the follower list of the user (path)
@@ -364,15 +340,32 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/error'
+  
+  /users/{userid}/followers/{userid2}:
+    parameters:
+      - $ref: '#/components/parameters/userid'
+      - $ref: '#/components/parameters/userid2'
+    delete:
+      tags: ['user', 'follow']
+      summary: deletes the user (requestbody) from the following list of user (path)
+      operationId: removeFollower
+      responses:
+        "204":
+          description: user removed from follower list (or user not in the followers list)
+        "401":
+          description: you're not authorized to remove the user
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+    
+  /users/{userid}/following/{userid2}:
+    parameters:
+      - $ref: '#/components/parameters/userid'
+      - $ref: '#/components/parameters/userid2'
     delete:
       tags: ['user', 'follow']
       summary: removes a user (requestbody) from the following list of the user (path)
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/userid2'
-        required: true
       responses:
         '204':
           description: user removed from followings succesfully (or it wasn't there)
@@ -423,22 +416,20 @@ paths:
                 schema:
                   $ref: '#/components/schemas/error'
 
-          
+  /users/{userid}/banned/{userid2}:
+    parameters:
+      - $ref: '#/components/parameters/userid' 
+      - $ref: '#/components/parameters/userid2' 
     delete:
       tags: ['ban', 'user']
       operationId: unbanUser
-      summary: removes a user (requestbody) from the banned list of the user (path)
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/userid2'
-        required: true
+      summary: removes a user (userid2) from the banned list of the user (path)
       responses:
         '204':
-          description: user unbanned succesfully (or it wasn't present)
+          description: user unbanned succesfully
         '404':
-          description: user not found
+          description: user not found or non
+
           content:
               application/json:
                 schema:
@@ -466,6 +457,14 @@ components:
       name: userid
       in: path
       description: The username of the user
+      required: true
+      schema:
+        $ref: '#/components/schemas/userid'
+
+    userid2:
+      name: userid2
+      in: path
+      description: The username username of the user, the logged user is interacting with
       required: true
       schema:
         $ref: '#/components/schemas/userid'
