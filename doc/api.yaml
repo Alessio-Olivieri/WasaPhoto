@@ -489,18 +489,27 @@ components:
   schemas:
   
     photoid:
+      description: |
+        the unique identificative (relative to the user)
+        of the photo
       type: string
       example: fneornf123
       minLength: 3
       maxLength: 16
     
     commentid:
+      description: |
+        the unique identificative (relative to the photo)
+        of the comment
+        photoid+userid+#
       type: string
       example: fneornf123
       minLength: 3
       maxLength: 16
       
     userid:  
+      description: |
+        the unique identificative of the user (subject)
       type: string
       example: Maria
       pattern: '^.*?$'
@@ -508,32 +517,44 @@ components:
       maxLength: 16
 
     userid2:
+      description: |
+        the unique identificative of the user (object)
       $ref: '#/components/schemas/userid'
 
     
     likeid:
-      description: photoid+userid concatenation
+      description: |
+        photoid+userid (of whom puts the like) concatenation
+        separated by special character
       type: string
       example: Mariafneornf123
       minLength: 6
       maxLength: 32
 
     like:
+      description: |
+        like, how is it made?
+        everything is stored in the id
+        since a user can put at most a single like to each picture
       type: object
       properties:
-        user:
-          $ref: '#/components/schemas/userid'
-        photoId:
-          $ref: '#/components/schemas/photoid'
         likeid:
           $ref: '#/components/schemas/likeid'
+        date:
+          type: string
+          format: date-time
     
     comment:
+      description: |
+        comemnt, how is it made?
+        the photo,user and which comment can be inferred by the id
+        the content of course is a string
+        it has also a date
       type: object
       example: "Che bella foto!!!"
       properties:
-        user:
-          $ref: '#/components/schemas/userid'
+        commentid:
+          $ref: '#/components/schemas/commentid'
         content:
           type: string
         date:
@@ -541,6 +562,11 @@ components:
           format: date-time
           
     photo:
+      description:
+        the unique identificative of the photo,
+        the image itself,
+        user who owns the photo, likes, comments, likecount
+        and the date of issue
       type: object
       properties:
         photoid:
@@ -554,10 +580,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/like'
+          minItems: 0
+          maxItems: 99999
+          uniqueItems: true
         comments:
           type: array
           items:
             $ref: '#/components/schemas/comment'
+          minItems: 0
+          maxItems: 99999
+          uniqueItems: true
         date:
           type: string
           format: date-time
@@ -572,6 +604,8 @@ components:
         - likecount
     
     error:
+      description: |
+        general error, the particulars are in the properties
       type: object 
       properties:
         error:
