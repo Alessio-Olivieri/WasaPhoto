@@ -34,12 +34,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 )
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	GetName() (string, error)
-	SetName(name string) error
+	AddUser(name string) error
+	ListUsers() ([]string, error)
+	Exists_user(username string) (int, error)
 
 	Ping() error
 }
@@ -51,20 +54,34 @@ type appdbimpl struct {
 // New returns a new instance of AppDatabase based on the SQLite connection `db`.
 // `db` is required - an error will be returned if `db` is `nil`.
 func New(db *sql.DB) (AppDatabase, error) {
+	log.Println("[BUILDING DATABASE STRUCTURE]")
 	if db == nil {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
 
-	// Check if table exists. If not, the database is empty, and we need to create the structure
-	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
-	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
-		_, err = db.Exec(sqlStmt)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+	TableMapping := map[string]string{
+		"Users":     usersTableCreationStatement,
+		"Photos":    photosTableCreationStatement,
+		"Comments":  commentsTableCreationStatement,
+		"Likes":     likesTableCreationStatement,
+		"Followers": followersTableCreationStatement,
+	}
+	for tableName, tableCreationStatement := range TableMapping {
+		fmt.Printf(" checking for table %s:\n", tableName)
+		// Check if table exists. If not, the database is empty, and we need to create the structure
+
+		err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name= ? ;`, tableName).Scan(&tableName)
+		if errors.Is(err, sql.ErrNoRows) {
+			fmt.Printf("  creating database %s\n", tableName)
+			_, err = db.Exec(tableCreationStatement)
+			if err != nil {
+				return nil, fmt.Errorf("   error creating database structure: %w", err)
+			}
+		} else {
+			fmt.Printf("  table %s already exists\n", tableName)
 		}
 	}
+	log.Println("[DATABASE STRUCTURE CREATED]")
 
 	return &appdbimpl{
 		c: db,
