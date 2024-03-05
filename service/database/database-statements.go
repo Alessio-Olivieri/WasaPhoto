@@ -53,4 +53,14 @@ const (
 		FOREIGN KEY("follower_user_id") REFERENCES "Users"("user_id")
 	);
 	`
+
+	Create_session = `
+		DROP TABLE IF EXISTS "Sessions";
+		CREATE TABLE "Sessions" (
+			"session_id"	INTEGER UNIQUE,
+			"user_id"	INTEGER NOT NULL,
+			PRIMARY KEY("session_id" AUTOINCREMENT)
+			FOREIGN KEY("user_id") REFERENCES "Users"("user_id")
+		);
+	`
 )

@@ -39,10 +39,15 @@ import (
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	GetName() (string, error)
+	// Users
+	Get_username(user_id int) (string, error) // Get the username of the user with the specified id
 	AddUser(name string) error
 	ListUsers() ([]string, error)
 	Exists_user(username string) (int, error)
+
+	// Session
+	Add_session(username int) (int, error)  // Create a new session for the user logged in with username
+	Get_userID(session_id int) (int, error) // Get the user id of the user with the specified session id
 
 	Ping() error
 }
@@ -65,6 +70,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 		"Comments":  commentsTableCreationStatement,
 		"Likes":     likesTableCreationStatement,
 		"Followers": followersTableCreationStatement,
+		"Sessions":  Create_session,
 	}
 	for tableName, tableCreationStatement := range TableMapping {
 		fmt.Printf(" checking for table %s:\n", tableName)
