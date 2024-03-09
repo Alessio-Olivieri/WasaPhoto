@@ -20,8 +20,24 @@ func (db *appdbimpl) Exists_user(username string) (int, error) {
 		if err != nil {
 			return -1, fmt.Errorf("error reading rows: %w", err)
 		}
+		// User exists
 		return user_id, nil
 	}
 
-	return -1, errors.New("user does not exist in the database")
+	_, err = db.c.Exec(`INSERT INTO users (username) VALUES (?);`, username)
+	if err != nil {
+		return -1, fmt.Errorf("error inserting new user: %w", err)
+	}
+
+	rows, err = db.c.Query("SELECT user_id FROM Users WHERE username = ?;", username)
+	if rows.Next() {
+		err := rows.Scan(&user_id)
+		if err != nil {
+			return -1, fmt.Errorf("error reading rows: %w", err)
+		}
+		// User exists
+		return user_id, nil
+	}
+
+	return -1, errors.New("error inserting new user")
 }

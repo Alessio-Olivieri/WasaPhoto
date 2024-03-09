@@ -20,11 +20,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/object_id'
+              $ref: '#/components/schemas/username'
         required: true
       responses:
         '201':
-          description: User log-in action successful
+          description: User log-in action successful, return the id of the user
           content:
             application/json:
               schema:

@@ -1,4 +1,5 @@
 <script setup>
+const token = sessionStorage.getItem('authToken');
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 <script>
@@ -35,9 +36,9 @@ export default {}
 							</RouterLink>
 						</li>
 						<li class="nav-item">
-							<RouterLink to="/link2" class="nav-link">
+							<RouterLink to="/login" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
-								Menu item 2
+								Login
 							</RouterLink>
 						</li>
 					</ul>
@@ -63,5 +64,4 @@ export default {}
 	</div>
 </template>
 
-<style>
-</style>
+<style></style>

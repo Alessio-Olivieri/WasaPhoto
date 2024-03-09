@@ -11,13 +11,16 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/context", rt.wrap(rt.getContextReply))
 
 	//login routes
-	rt.router.GET("/login", rt.login)
+	rt.router.POST("/login", rt.wrap(rt.login))
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 
 	//user
 	rt.router.GET("/users/", rt.get_users_list)
+
+	//photo
+	rt.router.POST("/photo", rt.wrap(rt.Post_photo))
 
 	return rt.router
 }
