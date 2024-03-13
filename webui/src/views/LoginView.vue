@@ -13,15 +13,16 @@ export default {
             this.loading = true;
             try {
                 console.log("Logging in with username: " + this.username);
-                const response = await this.$axios.post('/login', { username: this.username }); // Adjusted to match the Go backend
+                const response = await this.$axios.post('/login', { username: this.username });
                 console.log("Response: ", response.data);
-                this.userID = response.data.userId; // Adjusted to correctly access the userId in the response
+                this.userID = response.data.userId; 
                 this.saveTokenToSessionStorage(this.userID);
             } catch (error) {
                 console.error("Error while logging in:", error);
                 console.error("Error message:", error.message);
             }
             this.loading = false;
+            this.$router.push(toString(this.userID));
         },
 
         saveTokenToSessionStorage(userID) {
