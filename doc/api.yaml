@@ -52,7 +52,7 @@ paths:
                 maxItems: 500
                 
 
-  /users/{user_id}/edit:
+  /{user_id}/edit:
     parameters:
       - $ref: '#/components/parameters/user_id'
     put:
@@ -99,7 +99,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /users/{user_id}:  
+  /profile:  
     parameters:
       - $ref: '#/components/parameters/user_id' 
     get:

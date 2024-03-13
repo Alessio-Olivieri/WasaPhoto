@@ -18,9 +18,9 @@ func (rt *_router) Handler() http.Handler {
 
 	//user
 	rt.router.GET("/users/", rt.get_users_list)
+	rt.router.GET("/:username", rt.wrap(rt.GetUserProfile))
 
 	//photo
-	rt.router.POST("/photo", rt.wrap(rt.Post_photo))
 
 	return rt.router
 }

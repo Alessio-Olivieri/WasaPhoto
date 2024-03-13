@@ -4,7 +4,9 @@ export default {
 		return {
 			errormsg: null,
 			loading: false,
-			some_data: null,
+			userId: null,
+			username: null,
+			loggedIn: true
 		}
 	},
 	methods: {
@@ -19,22 +21,44 @@ export default {
 			}
 			this.loading = false;
 		},
+
+		async getProfile(){
+			this.loading = true
+			this.errormsg = null
+			console.log("getting user profile...")
+			const response = await this.$axios.get(`/${this.username}`, { username: this.username });
+		}
 	},
 	mounted() {
-		this.refresh()
+		try{
+			this.userId = sessionStorage.getItem('authToken').match(/^Bearer (.+)$/)[1]
+			this.username = sessionStorage.getItem('username')}
+		catch(e){
+			this.loggedIn = false
+		}
+		console.log("authToken: ", this.userId, "username: ", this.username)
+
+		if (this.loggedIn) {
+			this.getProfile();
+		}
+		
 	}
 }
 </script>
 
 <template>
 	<div>
-		<div>
-            Hello guys, this is the profile page of the user with token {{ sessionStorage.getItem('authToken') }}
+		<div v-if="this.loggedIn">
+			<h1>{{ this.username }}</h1>
+            This is my profile page
         </div>
+		<div v-else>
+			<h1>Not logged in</h1>
+			<p>You are not logged in, please login to see your profile</p>
+		</div>
 	</div>
 </template>
 
 <style>
 </style>
 
-k

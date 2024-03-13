@@ -1,7 +1,33 @@
+
 <script>
-const token = sessionStorage.getItem('authToken');
-import { RouterLink, RouterView } from 'vue-router'
-export default {}
+import { RouterLink, RouterView} from 'vue-router'
+export default {
+	data(){
+		return {
+			username : sessionStorage.getItem('username'),
+			authToken : sessionStorage.getItem('authToken')
+		}
+	},
+	methods: {
+		logout() {
+			localStorage.clear();
+			sessionStorage.clear();
+			location.reload();
+			this.$router.push('/login');
+		},
+		async refresh() {
+			this.loading = true;
+			this.errormsg = null;
+			try {
+				let response = await this.$axios.get("/");
+				this.some_data = response.data;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			this.loading = false;
+		},
+	},
+}
 </script>
 
 <template>
@@ -27,17 +53,23 @@ export default {}
 								Home
 							</RouterLink>
 						</li>
-						<li class="nav-item">
-							<RouterLink to=toString(this.userID) class="nav-link">
+						<li class="nav-item" v-if=this.username>
+							<RouterLink :to=this.username class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
-								Profile
+								profile of {{ username }}
 							</RouterLink>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item" v-if="!this.username">
 							<RouterLink to="/login" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
 								Login
 							</RouterLink>
+						</li>
+						<li class="nav-item" v-if=this.username>
+							<button class="nav-link" @click="logout">
+								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
+								Logout
+							</button>
 						</li>
 					</ul>
 

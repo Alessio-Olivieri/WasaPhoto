@@ -4,7 +4,7 @@ export default {
         return {
             errormsg: null,
             loading: false,
-            userID: null,
+            userId: null,
             username: "",
         }
     },
@@ -15,19 +15,25 @@ export default {
                 console.log("Logging in with username: " + this.username);
                 const response = await this.$axios.post('/login', { username: this.username });
                 console.log("Response: ", response.data);
-                this.userID = response.data.userId; 
-                this.saveTokenToSessionStorage(this.userID);
+                this.userId = response.data.userId; 
+                this.saveToSessionStorage();
+                console.log("Token saved correctly")
             } catch (error) {
                 console.error("Error while logging in:", error);
                 console.error("Error message:", error.message);
             }
             this.loading = false;
-            this.$router.push(toString(this.userID));
+            //console.log("pushing userId in $router")
+            //this.$router.push(toString(this.username));
+            location.reload();
         },
 
-        saveTokenToSessionStorage(userID) {
-            const bearerToken = `Bearer ${userID}`;
+        saveToSessionStorage() {
+            const bearerToken = `Bearer ${this.userId}`;
+            console.log("bearer token: ", bearerToken)
             sessionStorage.setItem('authToken', bearerToken);
+            sessionStorage.setItem('username', this.username)
+            
         },
     },
 }
@@ -47,8 +53,8 @@ export default {
                         <use href="/feather-sprite-v4.29.0.svg#key" />
                     </svg></button>
             </form>
-            <div v-if="userID !== null">
-                <p>Login successful! User identifier: {{ userID }}</p>
+            <div v-if="userId != null">
+                <p>Logged in as {{ username }}, Welcome!</p>
             </div>
         </div>
     </div>
