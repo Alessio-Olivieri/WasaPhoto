@@ -1,4 +1,5 @@
-module git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated
+module github.com/lexyoWave/wasaPhoto
+
 
 go 1.17
 
