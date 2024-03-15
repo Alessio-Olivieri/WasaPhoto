@@ -6,6 +6,7 @@ export default {
 			loading: false,
 			userId: null,
 			username: null,
+			authToken: null,
 			loggedIn: true
 		}
 	},
@@ -26,17 +27,18 @@ export default {
 			this.loading = true
 			this.errormsg = null
 			console.log("getting user profile...")
-			const response = await this.$axios.get(`/${this.username}`, { username: this.username });
+			const response = await this.$axios.get(`/users/${this.username}`, { authToken: this.authToken });
 		}
 	},
 	mounted() {
 		try{
+			this.authToken = sessionStorage.getItem('authToken')
 			this.userId = sessionStorage.getItem('authToken').match(/^Bearer (.+)$/)[1]
 			this.username = sessionStorage.getItem('username')}
 		catch(e){
 			this.loggedIn = false
 		}
-		console.log("authToken: ", this.userId, "username: ", this.username)
+		console.log("authToken: ", sessionStorage.getItem('authToken'), "username: ", this.username)
 
 		if (this.loggedIn) {
 			this.getProfile();

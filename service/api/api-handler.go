@@ -8,7 +8,6 @@ import (
 func (rt *_router) Handler() http.Handler {
 	// Register routes
 	rt.router.GET("/", rt.getHelloWorld)
-	rt.router.GET("/context", rt.wrap(rt.getContextReply))
 
 	//login routes
 	rt.router.POST("/login", rt.wrap(rt.login))
@@ -18,7 +17,7 @@ func (rt *_router) Handler() http.Handler {
 
 	//user
 	rt.router.GET("/users/", rt.get_users_list)
-	rt.router.GET("/:username", rt.wrap(rt.GetUserProfile))
+	rt.router.GET("/users/:username", rt.wrap(rt.GetUserProfile))
 
 	//photo
 

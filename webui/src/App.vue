@@ -54,7 +54,7 @@ export default {
 							</RouterLink>
 						</li>
 						<li class="nav-item" v-if=this.username>
-							<RouterLink :to=this.username class="nav-link">
+							<RouterLink :to="'/users/' + this.username" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
 								profile of {{ username }}
 							</RouterLink>
@@ -63,6 +63,14 @@ export default {
 							<RouterLink to="/login" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
 								Login
+							</RouterLink>
+						</li>
+						<li class="nav-item" v-if=this.username>
+							<RouterLink to="/users/" class="nav-link">
+								<svg class="feather">
+									<use href="/feather-sprite-v4.29.0.svg#search" />
+								</svg>
+								Search user
 							</RouterLink>
 						</li>
 						<li class="nav-item" v-if=this.username>

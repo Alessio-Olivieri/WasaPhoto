@@ -40,7 +40,7 @@ import (
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	// Users
-	Get_username(user_id int) (string, error) // Get the username of the user with the specified id
+	Get_userId(user_id string) (uint64, error) // Get the username of the user with the specified id
 	ListUsers() ([]string, error)
 	//if user exists return its ID, otherwise create a new user and return its ID
 	Exists_user(username string) (int, error)

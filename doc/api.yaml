@@ -99,7 +99,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /profile:  
+  /{user_id}:  
     parameters:
       - $ref: '#/components/parameters/user_id' 
     get:
@@ -132,7 +132,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'  
 
-    
+  /users/:
+      get:
+        operationId: searchUser
+        description: |-
+          Get lists of possible users
+          that have username similar 
+          to the one searched.
+        summary: Get users listed
+        tags: ['user']
+        parameters:
+          - $ref: "#/components/parameters/username"
+        responses:
+          "200":
+            description: User id found and returned.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  description: Object containing the user identifier.
+                  properties:
+                    UList:
+                      type: array
+                      description: The users that matched the search.
+                      items: 
+                       $ref: "#/components/schemas/username" 
+                      minItems: 0
+                      maxItems: 20
+          "401":
+            $ref: "#/components/schemas/error"
+          "403":
+            $ref: "#/components/schemas/error"
+          "500":
+            $ref: "#/components/schemas/error"
+
+
   /photos/:
     post:
       tags: ["photo"]
@@ -442,6 +476,14 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/object_id'
+
+    username:
+      name: username
+      in: query
+      description: the username of the user
+      required: true
+      schema:
+        $ref: '#/components/schemas/username'
         
         
   schemas:
