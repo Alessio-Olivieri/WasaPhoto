@@ -19,7 +19,7 @@ const (
 		"image"	BLOB,
 		"date"	TEXT,
 		PRIMARY KEY("photo_id" AUTOINCREMENT),
-		FOREIGN KEY("user_id") REFERENCES "Users"("user_id")
+		FOREIGN KEY("user_id") REFERENCES "Users"("user_id") ON DELETE CASCADE
 	);
 	`
 	commentsTableCreationStatement = `
@@ -30,8 +30,8 @@ const (
 		"text"	TEXT CHECK(length("text")<=500),
 		"date"	TEXT,
 		PRIMARY KEY("comment_id" AUTOINCREMENT)
-		FOREIGN KEY("user_id") REFERENCES "Users"("user_id")
-		FOREIGN KEY("photo_id") REFERENCES "Photos"("photo_id")
+		FOREIGN KEY("user_id") REFERENCES "Users"("user_id") ON DELETE CASCADE
+		FOREIGN KEY("photo_id") REFERENCES "Photos"("photo_id") ON DELETE CASCADE
 	);
 	`
 	likesTableCreationStatement = `
@@ -39,28 +39,28 @@ const (
 		"photo_id"	INTEGER NOT NULL,
 		"user_id"	INTEGER NOT NULL,
 		PRIMARY KEY("photo_id", "user_id")
-		FOREIGN KEY("user_id") REFERENCES "Users"("user_id")
-		FOREIGN KEY("photo_id") REFERENCES "Photos"("photo_id")
+		FOREIGN KEY("user_id") REFERENCES "Users"("user_id") ON DELETE CASCADE
+		FOREIGN KEY("photo_id") REFERENCES "Photos"("photo_id") ON DELETE CASCADE
 	);
 	`
 	followersTableCreationStatement = `
 	CREATE TABLE "Followers" (
-		"follower_id"	INTEGER UNIQUE,
-		"user_id"	INTEGER NOT NULL,
-		"follower_user_id"	INTEGER NOT NULL,
-		PRIMARY KEY("follower_id" AUTOINCREMENT)
-		FOREIGN KEY("user_id") REFERENCES "Users"("user_id")
-		FOREIGN KEY("follower_user_id") REFERENCES "Users"("user_id")
+		"follower_id"	INTEGER NOT NULL,
+		"followed_id"	INTEGER NOT NULL,
+		PRIMARY KEY("follower_id", "followed_id")
+		FOREIGN KEY("follower_id") REFERENCES "Users"("user_id") ON DELETE CASCADE
+		FOREIGN KEY("followed_id") REFERENCES "Users"("user_id") ON DELETE CASCADE
 	);
 	`
 
-	Create_session = `
-		DROP TABLE IF EXISTS "Sessions";
-		CREATE TABLE "Sessions" (
-			"session_id"	INTEGER UNIQUE,
-			"user_id"	INTEGER NOT NULL,
-			PRIMARY KEY("session_id" AUTOINCREMENT)
-			FOREIGN KEY("user_id") REFERENCES "Users"("user_id")
-		);
+	bansTableCreationStatement = `
+	CREATE TABLE IF NOT EXISTS Bans (
+		banner_id INTEGER NOT NULL,
+		banned_id INTEGER NOT NULL,
+		
+		PRIMARY KEY (banner_id, banned_id),
+		FOREIGN KEY (banner_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+		FOREIGN KEY (banned_id) REFERENCES Users(user_id) ON DELETE CASCADE
+	);
 	`
 )

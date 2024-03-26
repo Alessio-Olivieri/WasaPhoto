@@ -35,19 +35,59 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"mime/multipart"
+
+	"github.com/Alessio-Olivieri/wasaProject/service/schemas"
 )
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	// Users
-	Get_userId(user_id string) (uint64, error) // Get the username of the user with the specified id
+	// Get the username of the user with the specified id
+	Get_userId_from_username(user_id string) (uint64, error)
+	Get_username_from_userId(userId uint64) (string, error)
 	ListUsers() ([]string, error)
+	GetSearchUser(prompt string, requestingUser uint64) ([]string, error)
 	//if user exists return its ID, otherwise create a new user and return its ID
 	Exists_user(username string) (int, error)
 
-	// Session
-	Add_session(username int) (int, error)  // Create a new session for the user logged in with username
-	Get_userID(session_id int) (int, error) // Get the user id of the user with the specified session id
+	// Bans
+	//if banner has banned banned return 1, otherwise 0
+	IsBanned(banner uint64, banned uint64) (bool, error)
+	// insert a ban in the database
+	PutBan(follower_id uint64, followed_id uint64) error
+	// delete a ban from the database
+	DeleteBan(follower_id uint64, followed_id uint64) error
+
+	// Followers
+	// returns the list of followers of the user with the specified id
+	Get_followers_from_userId(userId uint64) ([]string, error)
+	// insert a follow in the database
+	PutFollower(follower_id uint64, followed_id uint64) error
+	// delete a follow from the database
+	DeleteFollower(follower_id uint64, followed_id uint64) error
+	//determine if follower is following followed
+	IsFollowing(follower_id uint64, followed_id uint64) (bool, error)
+
+	// Photo
+	// Make_photo creates a new photo in the database
+	Make_photo(user_id uint64, caption string, picture multipart.File) (schemas.Post, error)
+	Get_user_photos(user_id_request uint64, user_id_profile uint64) ([]schemas.Post, error)
+	Exists_photo(photo_id uint64) (bool, error)
+
+	// likes
+	DeleteLike(photo_id uint64, user_id uint64) error
+	PutLike(photo_id uint64, user_id uint64) error
+	IsLiked(photo_id uint64, user_id uint64) (bool, error)
+	//get likes
+	GetLikeAmount(photo_id uint64) (int, error)
+
+	// comments
+	PostComment(photo_id uint64, user_id uint64, text string) error
+	DeleteComment(comment_id uint64) error
+	GetComments(photo_id uint64) ([]schemas.Comment, error)
+
+	// stream
+	Get_stream(request_user_id uint64, page int) ([]schemas.Post, error)
 
 	Ping() error
 }
@@ -70,7 +110,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 		"Comments":  commentsTableCreationStatement,
 		"Likes":     likesTableCreationStatement,
 		"Followers": followersTableCreationStatement,
-		"Sessions":  Create_session,
+		"Bans":      bansTableCreationStatement,
 	}
 	for tableName, tableCreationStatement := range TableMapping {
 		fmt.Printf(" checking for table %s:\n", tableName)

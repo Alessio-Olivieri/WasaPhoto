@@ -1,20 +1,15 @@
 
 <script>
+const authToken = sessionStorage.getItem('authToken');
 import { RouterLink, RouterView} from 'vue-router'
 export default {
-	data(){
-		return {
-			username : sessionStorage.getItem('username'),
-			authToken : sessionStorage.getItem('authToken')
-		}
-	},
 	methods: {
 		logout() {
 			localStorage.clear();
 			sessionStorage.clear();
 			location.reload();
-			this.$router.push('/login');
 		},
+
 		async refresh() {
 			this.loading = true;
 			this.errormsg = null;
@@ -26,7 +21,26 @@ export default {
 			}
 			this.loading = false;
 		},
+
 	},
+
+	data() {
+		return {
+			username: sessionStorage.getItem('username'),
+			mypath: "/users/" + authToken,
+			streampath: "/users/" + authToken + "/stream/",
+		}
+	},
+
+	mounted() {
+		console.log("username: ", this.username)
+		if (this.username) {
+			this.$router.push('/users/' + this.username)
+		}
+		else {this.$router.push('/login')}
+		console.log("authToken: ", sessionStorage.getItem('authToken'))
+		console.log("username: ", this.username)
+	}
 }
 </script>
 
@@ -47,16 +61,22 @@ export default {
 						<span>General</span>
 					</h6>
 					<ul class="nav flex-column">
-						<li class="nav-item">
-							<RouterLink to="/" class="nav-link">
+						<li class="nav-item" v-if=this.username>
+							<RouterLink to="/stream" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#home"/></svg>
-								Home
+								Stream
 							</RouterLink>
 						</li>
 						<li class="nav-item" v-if=this.username>
 							<RouterLink :to="'/users/' + this.username" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
 								profile of {{ username }}
+							</RouterLink>
+						</li>
+						<li class="nav-item" v-if=this.username>
+							<RouterLink :to="'/photos/'" class="nav-link">
+								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
+								Upload Picture
 							</RouterLink>
 						</li>
 						<li class="nav-item" v-if="!this.username">
@@ -78,18 +98,6 @@ export default {
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
 								Logout
 							</button>
-						</li>
-					</ul>
-
-					<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-						<span>Secondary menu</span>
-					</h6>
-					<ul class="nav flex-column">
-						<li class="nav-item">
-							<RouterLink :to="'/some/' + 'variable_here' + '/path'" class="nav-link">
-								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#file-text"/></svg>
-								Item 1
-							</RouterLink>
 						</li>
 					</ul>
 				</div>

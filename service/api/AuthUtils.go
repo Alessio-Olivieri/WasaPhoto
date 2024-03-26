@@ -1,20 +1,13 @@
 package api
 
 import (
-	"fmt"
-	"net/http"
+	"errors"
 	"strconv"
-	"strings"
 )
 
-func GetIdFromBearer(r *http.Request) uint64 {
-	authHeader := r.Header.Get("authToken")
-	fmt.Println("authheader:", authHeader)
-	authParts := strings.Fields(authHeader)
-	token := authParts[1]
-	myId, err := strconv.ParseUint(token, 10, 64)
-	if err != nil {
-		return 18446744073709551615
+func ExtractId_from_Bearer(token string) (uint64, error) {
+	if len(token) < len("Bearer ") || token[:len("Bearer ")] != "Bearer " {
+		return 0, errors.New("invalid Bearer token format")
 	}
-	return myId
+	return strconv.ParseUint(token[len("Bearer "):], 10, 64)
 }

@@ -6,7 +6,7 @@ import (
 
 // return a list with the name of all the users
 func (db *appdbimpl) ListUsers() ([]string, error) {
-	log.Println(" listing users")
+	log.Println("DATABASE:  listing users")
 	rows, err := db.c.Query(`SELECT username FROM Users;`)
 	if err != nil {
 		return nil, err
@@ -15,7 +15,7 @@ func (db *appdbimpl) ListUsers() ([]string, error) {
 
 	var ret []string
 	var username string
-	log.Println("enering loop")
+	log.Println("DATABASE: enering loop")
 
 	for rows.Next() {
 		if err := rows.Scan(&username); err != nil {
@@ -23,6 +23,6 @@ func (db *appdbimpl) ListUsers() ([]string, error) {
 		}
 		ret = append(ret, username)
 	}
-	log.Println("returning list of users, length:", len(ret))
+	log.Println("DATABASE: returning list of users, length:", len(ret))
 	return ret, nil
 }

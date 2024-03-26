@@ -14,7 +14,6 @@ paths:
         If the user does not exist, it will be created,
         and an identifier is returned.
         If the user exists, the user identifier is returned.
-      security: []
       requestBody:
         description: User details
         content:
@@ -23,7 +22,7 @@ paths:
               $ref: '#/components/schemas/username'
         required: true
       responses:
-        '201':
+        '200':
           description: User log-in action successful, return the id of the user
           content:
             application/json:
@@ -34,8 +33,7 @@ paths:
     get:
       tags: ["stream"]
       operationId: getMyStream 
-      security:
-        - bearerAuthentication: []
+      
       summary: ask for the stream of the user, specified by user_id which is inferred by auth token 
       responses:
         '200':
@@ -52,14 +50,13 @@ paths:
                 maxItems: 500
                 
 
-  /{user_id}/edit:
+  /users/{user_id}/edit:
     parameters:
       - $ref: '#/components/parameters/user_id'
     put:
       tags: ['user']
       operationId: setMyUserName
-      security:
-        - bearerAuthentication: []
+      
       summary: creates or updates user details
       description: |
         update the details of the user
@@ -99,15 +96,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /{user_id}:  
+  /users/{user_id}:  
     parameters:
       - $ref: '#/components/parameters/user_id' 
     get:
       tags: ['profile']
       summary: request the profile of the user, specified by user_id
       operationId: getProfileUser 
-      security:
-        - bearerAuthentication: []
       responses:
         '200':
           description: return the photos of the user in reverse chronological order
@@ -141,16 +136,22 @@ paths:
           to the one searched.
         summary: Get users listed
         tags: ['user']
-        parameters:
-          - $ref: "#/components/parameters/username"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                description: |
+                  The input of the search field
+                $ref: '#/components/schemas/username'
+          required: true
         responses:
           "200":
-            description: User id found and returned.
+            description: Users found and returned.
             content:
               application/json:
                 schema:
                   type: object
-                  description: Object containing the user identifier.
+                  description: Object containing the usernames that matched the search.
                   properties:
                     UList:
                       type: array
@@ -172,22 +173,21 @@ paths:
       tags: ["photo"]
       summary: uploads a picture for the user
       operationId: uploadPhoto
-      security:
-        - bearerAuthentication: []
+      
       requestBody:
         description: the photo to be uploaded
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/photo'
+              $ref: '#/components/schemas/post_photo'
         required: true
       responses:
         '201':
-          description: succesfull operation, returns the id of the new photo
+          description: succesfull operation, returns the new post
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/object_id'
+                $ref: '#/components/schemas/post'
         '400':
           description: bad request
           content:
@@ -207,8 +207,7 @@ paths:
     delete:
       tags: ['photo']
       operationId: deletePhoto
-      security:
-        - bearerAuthentication: []
+      
       summary: deletes the photo
       responses:
         "204":
@@ -227,8 +226,7 @@ paths:
     post:
       tags: ['comment']
       operationId: commentPhoto
-      security:
-        - bearerAuthentication: []
+      
       summary: uploads a comment on the picture
       requestBody:
         description: the photo to be uploaded
@@ -258,8 +256,7 @@ paths:
       tags: ['comment']
       operationId: uncommentPhoto
       summary: deletes the 
-      security:
-        - bearerAuthentication: []
+      
       responses:
         "204":
           description: comment deleted or comment didn't exist
@@ -279,8 +276,7 @@ paths:
 
       operationId: likePhoto
       summary: likes the picture, returns '200' if the picture is already liked
-      security:
-        - bearerAuthentication: []
+      
       description: the logged user likes the picture, returns '200' if the picture is already liked
       requestBody:
         description: |
@@ -314,8 +310,7 @@ paths:
       tags: ['like']
       operationId: unlikePhoto
       summary: unlikes the photo
-      security:
-        - bearerAuthentication: []
+      
       description: remove the like of user in request body from the photo of the user in path
       responses:
         "204":
@@ -328,15 +323,14 @@ paths:
                   $ref: '#/components/schemas/error'
 
           
-  /following/{user_id}/:
+  /followed/{user_id}/:
     parameters:
       - $ref: '#/components/parameters/user_id'
     put:
       tags: ['follow']
       operationId: followUser
       summary: add a follower
-      security:
-        - bearerAuthentication: []
+      
       description: |
         add a user to the followers list of the authenticated user
       responses:
@@ -368,8 +362,7 @@ paths:
       tags: ['follow']
       operationId: unfollowUser
       summary: removes a follower
-      security:
-        - bearerAuthentication: []
+      
       description: |
         remove a user from the followers list of the authenticated user
       responses:
@@ -395,8 +388,7 @@ paths:
       tags: ['ban']
       operationId: banUser
       summary: ban a user
-      security:
-        - bearerAuthentication: []
+      
       description: |
         add a user to the banned list of the authenticated user
       responses:
@@ -422,8 +414,7 @@ paths:
       tags: ['ban']
       operationId: unbanUser
       summary: removes a user (userid2) from the banned list of the user (path)
-      security:
-        - bearerAuthentication: []
+      
       responses:
         '204':
           description: user unbanned succesfully
@@ -552,6 +543,9 @@ components:
         post_id:
           description: the unique identifier of the photo to which the comment belongs
           $ref: '#/components/schemas/object_id'
+        username:
+          description: the username of the user that posted the comment
+          $ref: '#/components/schemas/username'
         user_id:
           description: the unique identifier of the user that posted the comment
           $ref: '#/components/schemas/object_id'
@@ -570,6 +564,21 @@ components:
       maxItems: 99999
       uniqueItems: true
       
+    post_photo:
+      description: 
+        Schema for handling the photo upload
+      type: object
+      properties:
+        photo:
+          description: the photo to be uploaded
+          $ref: '#/components/schemas/photo'
+        content:
+          description: the content of the photo
+          $ref: '#/components/schemas/text'
+        user_id:
+          description: the unique identifier of the user
+          $ref: '#/components/schemas/object_id'
+    
     photo:
       description: 
         binary data of the photo image itself
@@ -582,8 +591,11 @@ components:
       items:
         type: object
         properties: 
-          user:
-            description: 'the user that puts the like'
+          username:
+            description: 'the username of the user that puts like'
+            $ref: '#/components/schemas/username'
+          user_id:
+            description: 'the id of the user that puts the like'
             $ref: '#/components/schemas/object_id'
           photo_id:
             description: the id of the photo where the like has been put
@@ -605,9 +617,9 @@ components:
           $ref: '#/components/schemas/photo'
         content:
           $ref: '#/components/schemas/text'
-        user_id:
-          description: the unique identifier of the user
-          $ref: '#/components/schemas/object_id'
+        username:
+          description: the username of the user that posted the photo
+          $ref: '#/components/schemas/username'
         likes:
           $ref: '#/components/schemas/likes'
         comments:
@@ -638,7 +650,7 @@ components:
           maxLength: 100000
     
   securitySchemes:
-    bearerAuthentication:
+    bearerAuth:
       description: |
         User authentication with the user ID passed
         as an authentication token.
@@ -646,3 +658,6 @@ components:
         according to the project specification.
       type: http
       scheme: bearer
+
+security: 
+  - bearerAuth: []

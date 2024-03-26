@@ -4,21 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
+	"github.com/Alessio-Olivieri/wasaProject/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
-)
 
-// LoginRequest is the request body for the POST /login route
-type LoginRequest struct {
-	Username string `json:"username"`
-}
+	"github.com/Alessio-Olivieri/wasaProject/service/schemas"
+)
 
 // login is the handler for the POST /login route
 func (rt *_router) login(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	ctx.Logger.Info("Login request")
 
-	// Decode the request body
-	var loginReq LoginRequest
+	// request body
+	var loginReq schemas.Username
 	if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -31,6 +28,7 @@ func (rt *_router) login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	ctx.Logger.Info("Authenticated user ", loginReq.Username, " with ID ", userID)
 
 	// response contains the user ID associated to the username
 	response := map[string]uint64{"userId": uint64(userID)}
@@ -43,4 +41,6 @@ func (rt *_router) login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	ctx.Logger.Info("sent UserID ", response["userId"], "to the client")
+	w.WriteHeader(http.StatusOK)
 }

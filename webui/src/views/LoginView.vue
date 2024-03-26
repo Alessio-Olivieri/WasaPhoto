@@ -1,16 +1,21 @@
 <script>
+const authToken = sessionStorage.getItem('authToken');
+const username = sessionStorage.getItem('username');
 export default {
     data: function() {
         return {
             errormsg: null,
             loading: false,
             userId: null,
-            username: "",
         }
     },
     methods: {
         async login() {
             this.loading = true;
+            if (this.username.length < 3) {
+                console.error("Username must be at least 3 characters long");
+                return;
+            }
             try {
                 console.log("Logging in with username: " + this.username);
                 const response = await this.$axios.post('/login', { username: this.username });
@@ -30,10 +35,8 @@ export default {
 
         saveToSessionStorage() {
             const bearerToken = `Bearer ${this.userId}`;
-            console.log("bearer token: ", bearerToken)
             sessionStorage.setItem('authToken', bearerToken);
             sessionStorage.setItem('username', this.username)
-            
         },
     },
 }
@@ -43,7 +46,7 @@ export default {
     <div class="login-container">
         <LoadingSpinner v-if="loading"></LoadingSpinner>
         <div class="login-form">
-            <h2>Autenticati bastardo</h2>
+            <h2>Autenticati.</h2>
             <form @submit.prevent="login">
                 <label class="login-label" for="username">Username:</label>
                 <input type="text" id="username" v-model="username" required minlength="3" maxlength="20"

@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
+	"github.com/Alessio-Olivieri/wasaProject/service/api/reqcontext"
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
@@ -14,7 +14,7 @@ import (
 type httpRouterHandler func(http.ResponseWriter, *http.Request, httprouter.Params, reqcontext.RequestContext)
 
 // wrap parses the request and adds a reqcontext.RequestContext instance related to the request.
-func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func (rt *_router) wrap(fn httpRouterHandler, authRequired bool) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		reqUUID, err := uuid.NewV4()
 		if err != nil {
@@ -32,11 +32,21 @@ func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Re
 			"remote-ip": r.RemoteAddr,
 		})
 
-		sessionCookie, err := r.Cookie("session_id")
-		if err != nil {
-			ctx.Logger.Debug("no session cookie found")
-		} else {
-			ctx.SessionID = sessionCookie.Value
+		// Add the user id to the context if it's available
+		if authRequired {
+			authHeader := r.Header.Get("Authorization")
+			if authHeader == "" {
+				ctx.Logger.Error("Authorization-header: missing")
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			ctx.UserId, err = ExtractId_from_Bearer(r.Header.Get("Authorization"))
+			if err != nil {
+				ctx.Logger.Error(err)
+				ctx.UserId = 0
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 		}
 
 		// Call the next handler in chain (usually, the handler function for the path)
