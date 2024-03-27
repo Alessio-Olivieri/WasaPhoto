@@ -28,6 +28,24 @@ func (db *appdbimpl) IsFollowing(follower_id uint64, followed_id uint64) (bool, 
 	return result, nil
 }
 
+func (db *appdbimpl) GetFollowersAmount(followed_id uint64) (int, error) {
+	rows, err := db.c.Query(`SELECT COUNT(*) FROM Followers WHERE followed_id = ?`, followed_id)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	var result int
+
+	rows.Next()
+	err = rows.Scan(&result)
+	if err != nil {
+		return 0, err
+	}
+
+	return result, nil
+}
+
 func (db *appdbimpl) DeleteFollower(follower_id uint64, followed_id uint64) error {
 	_, err := db.c.Exec(`DELETE from Followers WHERE  follower_id = ? AND followed_id = ?`, follower_id, followed_id)
 	if err != nil {

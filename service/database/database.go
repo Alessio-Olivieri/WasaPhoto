@@ -67,6 +67,7 @@ type AppDatabase interface {
 	DeleteFollower(follower_id uint64, followed_id uint64) error
 	//determine if follower is following followed
 	IsFollowing(follower_id uint64, followed_id uint64) (bool, error)
+	GetFollowersAmount(followed_id uint64) (int, error)
 
 	// Photo
 	// Make_photo creates a new photo in the database

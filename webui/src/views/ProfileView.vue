@@ -48,7 +48,12 @@ export default {
                         'Authorization': this.authToken,
                     },
                 });
-			this.refresh()
+			this.profile_data.data.followers_count = this.profile_data.data.followers_count + 1
+			this.profile_data.data.isFollowing=true
+			if (this.profile_data.data.followers == null){
+				this.profile_data.data.followers = []
+			}
+			this.profile_data.data.followers.push(sessionStorage.getItem('username'))
 			this.loading = false
 		},
 
@@ -60,7 +65,12 @@ export default {
 					'Authorization': this.authToken
 				}
 			});
-			this.refresh()
+			this.profile_data.data.followers_count = this.profile_data.data.followers_count - 1
+			this.profile_data.data.isFollowing=false
+			this.profile_data.data.followers.splice(
+				this.profile_data.data.followers.findIndex(
+					follower => follower === sessionStorage.getItem('username')
+					), 1);
 			this.loading = false
 		},
 		
@@ -90,12 +100,12 @@ export default {
 		async likePost(post){
 			this.loading = true
 			console.log("liking post...")
-			const response = await this.$axios.put(`/photos/${post.post_id}/likes/${sessionStorage.getItem("username")}`, {}, {
+			await this.$axios.put(`/photos/${post.post_id}/likes/${sessionStorage.getItem("username")}`, {}, {
 				headers: {
                         'Authorization': this.authToken,
                     },
                 });
-			post.likes_count = response.data
+			post.likes_count = post.likes_count + 1
 			post.is_liked = true
 			// this.refresh()
 			this.loading = false
@@ -104,12 +114,12 @@ export default {
 		async unLikePost(post){
 			this.loading = true
 			console.log("unliking post...")
-			const response = await this.$axios.delete(`/photos/${post.post_id}/likes/${sessionStorage.getItem("username")}`, {
+			await this.$axios.delete(`/photos/${post.post_id}/likes/${sessionStorage.getItem("username")}`, {
 				headers: {
 					'Authorization': this.authToken
 				}
 			});
-			post.likes_count = response.data
+			post.likes_count = post.likes_count - 1
 			post.is_liked = false
 			this.loading = false
 		},
@@ -176,56 +186,56 @@ export default {
 
 <template>
 	<div>
-	  <div v-if="loggedIn">
-		<h1>{{ $route.params.username }}</h1>
-		<p>This is the profile page of {{ $route.params.username }}</p>
-		<div v-if="!isItMe && profile_data">
-		  <button v-if="!profile_data.data.isFollowing && !profile_data.data.isBanned" @click="follow">Follow</button>
-		  <button v-if="profile_data.data.isFollowing" @click="unfollow">Unfollow</button>
-		  <button v-if="!profile_data.data.isBanned" @click="ban">Ban</button>
-		  <button v-if="profile_data.data.isBanned" @click="unban">Unban</button>
-		</div>
-		<div v-if="profile_data">
-		  <p>Followers:
-			<label v-for="username in profile_data.data.followers" :key="username">{{ username }}</label>
-		  </p>
-		  <div v-if="profile_data.data.posts" class="post-container">
-			<h3 class="photos-heading">Photos:</h3>
-			<div v-for="post in profile_data.data.posts" :key="post" class="post">
-			  <div class="post-content">
-				<p v-if="post.content">{{ post.content }}</p>
-				<p>Likes: {{ post.likes_count }}</p>
-				<button v-if="!post.is_liked" @click="likePost(post)">Like</button>
-				<button v-if="post.is_liked" @click="unLikePost(post)">un-Like</button>
-			  </div>
-			  <div v-if="!post.showTextBox">
-				<img v-if="post.image" :src="`data:image/png;base64,${post.image}`" alt="Post Image" class="post-image">
-				<button v-if="!this.commentBox_to_show.hasOwnProperty(post.post_id)" @click="showTextBox(post.post_id)">Add Comment</button>
-				{{commentBox_to_show}}
+		<div v-if="loggedIn">
+			<h1>{{ $route.params.username }}</h1>
+			<div v-if="isItMe">
+				Change username Button
 			</div>
-			  <div v-if="this.commentBox_to_show.hasOwnProperty(post.post_id)">
-				<textarea v-model="post.commentText" placeholder="Enter your comment"></textarea>
-				<button @click="addComment(post.post_id, post.commentText)">Post Comment</button>
-			  </div>
-			  <div v-if="post.comments" class="comments">
-				<h4 class="comments-heading">Comments:</h4>
-				<div v-for="comment in post.comments" :key="comment" class="comments">
-					<div class="comment">
-						<p>From {{ comment.username }} : {{ comment.content }}</p>
-						<button @click="removeComment(post.post_id, comment.comment_id)">Delete comment</button>
+			<p>This is the profile page of {{ $route.params.username }}</p>
+			<div v-if="profile_data">
+				<div v-if="!isItMe">
+					<button v-if="!profile_data.data.isFollowing && !profile_data.data.isBanned" @click="follow()">Follow</button>
+					<button v-if="profile_data.data.isFollowing" @click="unfollow()">Unfollow</button>
+					<button v-if="!profile_data.data.isBanned" @click="ban">Ban</button>
+					<button v-if="profile_data.data.isBanned" @click="unban">Unban</button>
+				</div>
+				Number of followers: {{profile_data.data.followers_count}}
+				<p>Followers:
+					<label v-for="username in profile_data.data.followers" :key="username">{{ username }} </label>
+				</p>
+				<div v-if="profile_data.data.posts" class="post-container">
+					<h3 class="photos-heading">Photos:</h3>
+					<div v-for="post in profile_data.data.posts" :key="post" class="post">
+						<div class="post-content">
+							<p v-if="post.content">{{ post.content }}</p>
+							<p>Likes: {{ post.likes_count }}</p>
+							<button v-if="!post.is_liked" @click="likePost(post)">Like</button>
+							<button v-if="post.is_liked" @click="unLikePost(post)">un-Like</button>
+						</div>
+						<div v-if="!post.showTextBox">
+							<img v-if="post.image" :src="`data:image/png;base64,${post.image}`" alt="Post Image" class="post-image">
+							<button v-if="!this.commentBox_to_show.hasOwnProperty(post.post_id)" @click="showTextBox(post.post_id)">Add Comment</button>
+							{{commentBox_to_show}}
+						</div>
+						<div v-if="this.commentBox_to_show.hasOwnProperty(post.post_id)">
+							<textarea v-model="post.commentText" placeholder="Enter your comment"></textarea>
+							<button @click="addComment(post.post_id, post.commentText)">Post Comment</button>
+						</div>
+						<div v-if="post.comments" class="comments">
+							<h4 class="comments-heading">Comments:</h4>
+							<div v-for="comment in post.comments" :key="comment" class="comments">
+								<div class="comment">
+									<p>From {{ comment.username }} : {{ comment.content }}</p>
+									<button @click="removeComment(post.post_id, comment.comment_id)">Delete comment</button>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-			  </div>
 			</div>
-		  </div>
 		</div>
-	  </div>
-	  <div v-else>
-		<h1>Not logged in</h1>
-		<p>You are not logged in, please login to see your profile</p>
-	  </div>
 	</div>
-  </template>
+</template>
   
   <style>
   /* Basic styles for the post container */

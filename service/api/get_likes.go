@@ -37,18 +37,6 @@ func (rt *_router) get_likes(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	// Get the list of users who liked the photo
-	likes, err := rt.db.GetLikeAmount(photo_id)
-	if err != nil {
-		// Handle database error
-		ctx.Logger.WithError(err).Error(message + "Error getting likes")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	// Return the list of likes
-	w.Header().Set("content-type", "text/plain")
-	w.Write([]byte(strconv.Itoa(likes)))
 	w.WriteHeader(http.StatusOK)
 	ctx.Logger.Info(message + "Success")
 }

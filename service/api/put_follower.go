@@ -47,5 +47,15 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	//return the number of followers
+	followers, err := rt.db.GetFollowersAmount(profileId)
+	if err != nil {
+		ctx.Logger.WithError(err).Error(message + "Error getting followers")
+		return
+	}
+
+	w.Header().Set("content-type", "text/plain")
+	w.Write([]byte(strconv.Itoa(followers)))
+	w.WriteHeader(http.StatusOK)
 	ctx.Logger.Info(message)
 }

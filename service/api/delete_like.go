@@ -38,16 +38,6 @@ func (rt *_router) delete_like(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	//return the number of likes
-	likes, err := rt.db.GetLikeAmount(photo_id)
-	if err != nil {
-		ctx.Logger.WithError(err).Error(message + "Error getting likes")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("content-type", "text/plain")
-	w.Write([]byte(strconv.Itoa(likes)))
 	w.WriteHeader(http.StatusOK)
 
 	ctx.Logger.Info(message)
