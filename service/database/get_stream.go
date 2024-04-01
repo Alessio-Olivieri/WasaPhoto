@@ -49,7 +49,7 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Strea
 		return stream, err
 	}
 
-	stream.Posts, err = db.retrievePosts(rows, request_user_id)
+	stream.Posts, err = db.retrievePosts(rows)
 	if err != nil {
 		return stream, err
 	}

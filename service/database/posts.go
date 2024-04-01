@@ -6,7 +6,7 @@ import (
 	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
 )
 
-func (db *appdbimpl) retrievePosts(rows *sql.Rows, request_user_id uint64) ([]schemas.Post, error) {
+func (db *appdbimpl) retrievePosts(rows *sql.Rows) ([]schemas.Post, error) {
 	var postList []schemas.Post
 
 	//create each post
