@@ -6,8 +6,6 @@ import (
 
 // Handler returns an instance of httprouter.Router that handle APIs registered here
 func (rt *_router) Handler() http.Handler {
-	// Register routes
-	rt.router.GET("/", rt.getHelloWorld)
 
 	//login routes
 	rt.router.POST("/login", rt.wrap(rt.login, false))
@@ -21,6 +19,7 @@ func (rt *_router) Handler() http.Handler {
 	//user
 	rt.router.GET("/users/", rt.wrap(rt.search_users, true))
 	rt.router.GET("/users/:username", rt.wrap(rt.GetUserProfile, true))
+	rt.router.PUT("/settings/username", rt.wrap(rt.changeUsername, true))
 
 	//follower
 	rt.router.PUT("/followed/:username", rt.wrap(rt.put_follower, true))
@@ -41,6 +40,7 @@ func (rt *_router) Handler() http.Handler {
 
 	//photo
 	rt.router.POST("/photos/", rt.wrap(rt.post_photo, true))
+	rt.router.DELETE("/photos/:photo_id", rt.wrap(rt.delete_photo, true))
 
 	return rt.router
 }

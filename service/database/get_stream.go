@@ -1,11 +1,31 @@
 package database
 
 import (
-	"github.com/Alessio-Olivieri/wasaProject/service/schemas"
+	"database/sql"
+	"errors"
+
+	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
 )
 
-func (db *appdbimpl) Get_stream(request_user_id uint64, page int) ([]schemas.Post, error) {
-	var postList []schemas.Post
+func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Stream, error) {
+	var stream schemas.Stream
+	var totalPosts int
+	//retrieve the total number of posts
+	err := db.c.QueryRow(`SELECT count(*) FROM 
+		photos INNER JOIN users ON users.user_id = photos.user_id
+		WHERE 
+		photos.user_id IN (SELECT followed_id FROM Followers WHERE follower_id = ?)`, request_user_id).Scan(&totalPosts)
+	if err != nil {
+		return stream, err
+	}
+	if totalPosts == 0 {
+		return stream, ErrEmptyStream
+	}
+
+	stream.TotalPages = int(totalPosts / 10)
+	if totalPosts < page*10 {
+		return stream, ErrPageNumberOutOfBound
+	}
 
 	rows, err := db.c.Query(`
 		 SELECT 
@@ -21,39 +41,18 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) ([]schemas.Pos
 			photos.user_id IN (SELECT followed_id FROM Followers WHERE follower_id = ?)
 		ORDER BY Photos.date DESC
 		LIMIT 10 OFFSET ?
-		`, request_user_id, request_user_id, page)
+		`, request_user_id, request_user_id, page*10)
+	if errors.Is(err, sql.ErrNoRows) {
+		return stream, ErrPageNumberOutOfBound
+	}
 	if err != nil {
-		return postList, err
+		return stream, err
 	}
 
-	//create each post
-	for rows.Next() {
-		var post schemas.Post
-		err = rows.Scan(&post.PostId, &post.Picture, &post.UserId, &post.Username, &post.Text, &post.Date, &post.IsLiked)
-		if err != nil {
-			return nil, err
-		}
-		//determine if the picture il liked by the requesting user
-		post.IsLiked, err = db.IsLiked(post.PostId, request_user_id)
-		if err != nil {
-			return nil, err
-		}
-
-		//get the usernames of who putted like
-		post.Likes, err = db.GetLikes(post.PostId)
-		if err != nil {
-			return nil, err
-		}
-		post.LikesCount = len(post.Likes)
-
-		//get the comments of a picture
-		post.Comments, err = db.GetComments(post.PostId)
-		if err != nil {
-			return nil, err
-		}
-
-		postList = append(postList, post)
+	stream.Posts, err = db.retrievePosts(rows, request_user_id)
+	if err != nil {
+		return stream, err
 	}
 
-	return postList, nil
+	return stream, nil
 }

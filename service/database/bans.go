@@ -1,11 +1,11 @@
 package database
 
 // retruns 1 if banned, 0 if not banned, -1 if error
-func (db *appdbimpl) IsBanned(bannerId uint64, bannedId uint64) (bool, error) {
+func (db *appdbimpl) IsBanned(banner_id uint64, banned_id uint64) (bool, error) {
 	var exists int8
 	err := db.c.QueryRow(`SELECT EXISTS(SELECT 1 FROM Bans
 		WHERE banner_id = ? AND banned_id = ?)`,
-		bannerId, bannedId).Scan(&exists)
+		banner_id, banned_id).Scan(&exists)
 	if err != nil {
 		return false, err
 	}
@@ -15,16 +15,34 @@ func (db *appdbimpl) IsBanned(bannerId uint64, bannedId uint64) (bool, error) {
 	return false, nil
 }
 
-func (db *appdbimpl) PutBan(follower_id uint64, followed_id uint64) error {
-	_, err := db.c.Exec(`INSERT into Bans VALUES (?, ?)`, follower_id, followed_id)
+// inserts a new ban in the database if it does not already exist
+func (db *appdbimpl) PutBan(banner_id uint64, banned_id uint64) error {
+	// Check if ban exists
+	exists, err := db.IsBanned(banner_id, banned_id)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return ErrBanAlreadyExists
+	}
+	_, err = db.c.Exec(`INSERT INTO Bans (banner_id, banned_id) VALUES (?, ?);`, banner_id, banned_id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *appdbimpl) DeleteBan(follower_id uint64, followed_id uint64) error {
-	_, err := db.c.Exec(`DELETE from Bans WHERE banner_id = ? AND banned_id = ?`, follower_id, followed_id)
+func (db *appdbimpl) DeleteBan(banner_id uint64, banned_id uint64) error {
+	// Check if ban exists
+	exists, err := db.IsBanned(banner_id, banned_id)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return ErrBanNotExists
+	}
+
+	_, err = db.c.Exec(`DELETE from Bans WHERE banner_id = ? AND banned_id = ?`, banner_id, banned_id)
 	if err != nil {
 		return err
 	}

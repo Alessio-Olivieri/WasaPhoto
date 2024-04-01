@@ -1,13 +1,22 @@
 package api
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/Alessio-Olivieri/wasaProject/service/api/reqcontext"
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
 )
+
+func ExtractId_from_Bearer(token string) (uint64, error) {
+	if len(token) < len("Bearer ") || token[:len("Bearer ")] != "Bearer " {
+		return 0, errors.New("invalid Bearer token format")
+	}
+	return strconv.ParseUint(token[len("Bearer "):], 10, 64)
+}
 
 // httpRouterHandler is the signature for functions that accepts a reqcontext.RequestContext in addition to those
 // required by the httprouter package.

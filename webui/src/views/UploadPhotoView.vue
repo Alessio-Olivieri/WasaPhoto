@@ -7,9 +7,11 @@ export default {
             authUser: null,
 			authToken: null,
             picture: null,
+            caption: null,
             imagePresent: false,
             captionPresent: false,
             response_post: null,
+            message: "",
 		}
 	},
 	methods: {
@@ -58,10 +60,27 @@ export default {
                     'Authorization': this.authToken,
                 },
             });
+            this.message = ""
 			console.log("Picture uploaded successfully!")
 			} catch (error) {
-				// Handle upload error here (e.g., display error message)
-				console.error("Error uploading picture:", error);
+				if (error.response){
+				const statusCode = error.response.status;
+                    switch (statusCode) {
+						case 400:
+							console.error("Bad request: No content and no photo")
+							this.message = "Insert content or photo"
+							break
+						case 401:
+							console.error("Auth header missing")
+							this.message = "Unauthorized"
+							break
+						default:
+							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
+							this.message = "Error handling ban request"
+					}
+				} else {
+					console.error("error: ", error)
+				}
 			}
         }
 	},
@@ -88,6 +107,7 @@ export default {
                 <textarea class="form-control" id="picture-text-box" placeholder="Enter a description for your picture" v-model="caption"></textarea>
             </div>
             <div>
+                <h3 v-if="message!=''">{{ message }}</h3>
                 <input type="file" id="picture" accept=".png,.jpg,image/jpeg" @change="onFileChange"/>
                 <button @click="uploadPicture">Upload Picture</button>
             </div>  

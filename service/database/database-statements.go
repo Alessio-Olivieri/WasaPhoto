@@ -30,7 +30,7 @@ const (
 		"text"	TEXT CHECK(length("text")<=500),
 		"date"	TEXT,
 		PRIMARY KEY("comment_id" AUTOINCREMENT)
-		FOREIGN KEY("user_id") REFERENCES "Users"("user_id") ON DELETE CASCADE
+		FOREIGN KEY("user_id") REFERENCES "Users"("user_id")
 		FOREIGN KEY("photo_id") REFERENCES "Photos"("photo_id") ON DELETE CASCADE
 	);
 	`

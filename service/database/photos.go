@@ -5,7 +5,7 @@ import (
 	"mime/multipart"
 	"time"
 
-	"github.com/Alessio-Olivieri/wasaProject/service/schemas"
+	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
 )
 
 func (db *appdbimpl) Make_photo(user_id uint64, caption string, picture multipart.File) (schemas.Post, error) {

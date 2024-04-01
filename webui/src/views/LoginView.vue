@@ -1,9 +1,8 @@
 <script>
-const authToken = sessionStorage.getItem('authToken');
-const username = sessionStorage.getItem('username');
 export default {
     data: function() {
         return {
+            username: "",
             errormsg: null,
             loading: false,
             userId: null,

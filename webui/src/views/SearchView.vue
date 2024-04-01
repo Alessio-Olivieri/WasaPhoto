@@ -26,8 +26,28 @@ export default {
                 console.log("Response: ", response.data);
                 this.search_result =  response.data.users;
             } catch (error) {
-                console.error("Error while getting user list", error);
-                console.error("Error message:", error.message);
+                if (error.response){
+                    const statusCode = error.response.status;
+                    switch (statusCode) {
+                        case 401:
+                            console.error("Unauthorized: user not logged in")
+                            this.message = "user not logged in"
+                            break
+                        case 400:
+                            console.error("Bad request: Search username wrong format")
+                            this.message = "insert Search username"
+                            break
+                        case 404:
+                            console.error("No username matches the search")
+                            this.message = "No username matches the search"
+                            break
+                        default:
+                            console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
+                            this.message = "error updating username"
+                    }
+                } else {
+                    console.error("error: ", error)
+                }
             }
 
             this.loading = false;

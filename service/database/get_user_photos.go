@@ -1,44 +1,27 @@
 package database
 
 import (
-	"github.com/Alessio-Olivieri/wasaProject/service/schemas"
+	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
 )
 
 func (db *appdbimpl) Get_user_photos(user_id_request uint64, user_id_profile uint64) ([]schemas.Post, error) {
-	var postlist []schemas.Post
-	rows, err := db.c.Query(`SELECT photo_id, text, like_count, image, "date" FROM Photos WHERE user_id = ?;`, user_id_profile)
+	var postList []schemas.Post
+	rows, err := db.c.Query(`SELECT Photos.photo_id, 
+		Photos.image,
+		Photos.user_id, 
+		(SELECT username FROM Users WHERE user_id = ?),
+		Photos.text,
+		Photos.date,
+		(SELECT EXISTS(SELECT TRUE FROM Likes WHERE Photos.photo_id = photo_id AND user_id = ?)) AS isLiked 
+		FROM Photos WHERE user_id = ?;`, user_id_request, user_id_request, user_id_profile)
 	if err != nil {
-		return postlist, err
+		return postList, err
 	}
 
-	//create each post
-	for rows.Next() {
-		var post schemas.Post
-		err = rows.Scan(&post.PostId, &post.Text, &post.LikesCount, &post.Picture, &post.Date)
-		if err != nil {
-			return nil, err
-		}
-		//determine if the picture il liked by the requesting user
-		post.IsLiked, err = db.IsLiked(post.PostId, user_id_request)
-		if err != nil {
-			return nil, err
-		}
-
-		//get the usernames of who putted like
-		post.Likes, err = db.GetLikes(post.PostId)
-		if err != nil {
-			return nil, err
-		}
-		post.LikesCount = len(post.Likes)
-
-		//get the comments of a picture
-		post.Comments, err = db.GetComments(post.PostId)
-		if err != nil {
-			return nil, err
-		}
-
-		postlist = append(postlist, post)
+	postList, err = db.retrievePosts(rows, user_id_request)
+	if err != nil {
+		return postList, err
 	}
 
-	return postlist, nil
+	return postList, nil
 }

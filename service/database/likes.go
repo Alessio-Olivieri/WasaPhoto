@@ -1,5 +1,10 @@
 package database
 
+import (
+	"database/sql"
+	"errors"
+)
+
 // retruns 1 if banned, 0 if not banned, -1 if error
 func (db *appdbimpl) IsLiked(photo_id uint64, user_id uint64) (bool, error) {
 	var exists int8
@@ -16,7 +21,31 @@ func (db *appdbimpl) IsLiked(photo_id uint64, user_id uint64) (bool, error) {
 }
 
 func (db *appdbimpl) PutLike(photo_id uint64, user_id uint64) error {
-	_, err := db.c.Exec(`INSERT into Likes VALUES (?, ?)`, photo_id, user_id)
+	var user_id_photo uint64
+	err := db.c.QueryRow(`SELECT user_id FROM Photos WHERE photo_id = ?`, photo_id).Scan(&user_id_photo)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrPhotoNotExists
+	}
+
+	//check if user is banned
+	banned, err := db.IsBanned(user_id_photo, user_id)
+	if err != nil {
+		return err
+	}
+	if banned {
+		return ErrBanned
+	}
+
+	//check if like exists
+	exists, err := db.IsLiked(photo_id, user_id)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return ErrAlreadyLiked
+	}
+
+	_, err = db.c.Exec(`INSERT into Likes VALUES (?, ?)`, photo_id, user_id)
 	if err != nil {
 		return err
 	}
@@ -24,7 +53,30 @@ func (db *appdbimpl) PutLike(photo_id uint64, user_id uint64) error {
 }
 
 func (db *appdbimpl) DeleteLike(photo_id uint64, user_id uint64) error {
-	_, err := db.c.Exec(`DELETE from Likes WHERE photo_id = ? AND user_id = ?`, photo_id, user_id)
+	var user_id_photo uint64
+	err := db.c.QueryRow(`SELECT user_id FROM Photos WHERE photo_id = ?`, photo_id).Scan(&user_id_photo)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrPhotoNotExists
+	}
+
+	//check if user is banned
+	banned, err := db.IsBanned(user_id_photo, user_id)
+	if err != nil {
+		return err
+	}
+	if banned {
+		return ErrBanned
+	}
+
+	//check if like exists
+	exists, err := db.IsLiked(photo_id, user_id)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return ErrLikeNotExists
+	}
+	_, err = db.c.Exec(`DELETE from Likes WHERE photo_id = ? AND user_id = ?`, photo_id, user_id)
 	if err != nil {
 		return err
 	}

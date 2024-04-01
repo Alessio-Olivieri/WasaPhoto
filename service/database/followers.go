@@ -1,7 +1,16 @@
 package database
 
 func (db *appdbimpl) PutFollower(follower_id uint64, followed_id uint64) error {
-	_, err := db.c.Exec(`INSERT into Followers VALUES (?, ?)`, follower_id, followed_id)
+	//check if follow exists
+	exists, err := db.IsFollowing(follower_id, followed_id)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return ErrAlreadyFollowed
+	}
+
+	_, err = db.c.Exec(`INSERT into Followers VALUES (?, ?)`, follower_id, followed_id)
 	if err != nil {
 		return err
 	}
@@ -47,7 +56,16 @@ func (db *appdbimpl) GetFollowersAmount(followed_id uint64) (int, error) {
 }
 
 func (db *appdbimpl) DeleteFollower(follower_id uint64, followed_id uint64) error {
-	_, err := db.c.Exec(`DELETE from Followers WHERE  follower_id = ? AND followed_id = ?`, follower_id, followed_id)
+	//check if follow exists
+	exists, err := db.IsFollowing(follower_id, followed_id)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return ErrFollowNotExists
+	}
+
+	_, err = db.c.Exec(`DELETE from Followers WHERE  follower_id = ? AND followed_id = ?`, follower_id, followed_id)
 	if err != nil {
 		return err
 	}

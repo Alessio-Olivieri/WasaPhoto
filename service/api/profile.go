@@ -2,14 +2,16 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"strconv"
 
 	"github.com/Alessio-Olivieri/wasaProject/service/api/reqcontext"
+	"github.com/Alessio-Olivieri/wasaProject/service/database"
 	"github.com/julienschmidt/httprouter"
 
-	"github.com/Alessio-Olivieri/wasaProject/service/schemas"
+	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
 )
 
 func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -20,7 +22,7 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	// Extract the username from the path parameters
 	profile_username := ps.ByName("username")
 	if profile_username == "" {
-		// Handle missing username parameter
+		w.WriteHeader(http.StatusBadRequest)
 		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
 		return
 	}
@@ -28,6 +30,11 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 	// retrieve the userId from the username in the path
 	userId_profile, err := rt.db.Get_userId_from_username(profile_username)
+	if errors.Is(err, database.ErrUserNotExists) {
+		ctx.Logger.Error(message + "Error: User not found")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 	if err != nil || userId_profile == 18446744073709551615 {
 		ctx.Logger.WithError(err).Error(message + "Error getting userId from profile_username ")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -38,13 +45,10 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	// Check if the user has banned you
 	banned, err := rt.db.IsBanned(userId_profile, ctx.UserId)
 	if err != nil {
-		// handle error
 		ctx.Logger.Error(message + "" + err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	// If the user has banned you, return a 403 Forbidden
 	if banned {
 		ctx.Logger.Error(message + "Error: User_profile has banned you")
 		w.WriteHeader(http.StatusForbidden)
@@ -116,5 +120,6 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	message = message + "Response written: " + strconv.Itoa(amount) + " bytes \n"
 
+	w.WriteHeader(http.StatusOK)
 	ctx.Logger.Info(message)
 }

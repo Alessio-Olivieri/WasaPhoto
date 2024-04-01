@@ -1,9 +1,5 @@
 package database
 
-import (
-	"log"
-)
-
 func (db *appdbimpl) GetSearchUser(prompt string, requestingUser uint64) ([]string, error) {
 	/* returns at most 24 ReducedUsers records with the requested prompt
 	in their username among those who have not banned the requesteduser */
@@ -30,6 +26,8 @@ func (db *appdbimpl) GetSearchUser(prompt string, requestingUser uint64) ([]stri
 		}
 		result = append(result, username)
 	}
-	log.Println("DATABASE: returning list of users ", result)
+	if len(result) == 0 {
+		return nil, ErrUserNotExists
+	}
 	return result, nil
 }
