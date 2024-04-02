@@ -1,0 +1,14 @@
+FROM node:lts as builder
+
+WORKDIR /app
+COPY webui webui
+
+WORKDIR /app/webui
+RUN npm run build-prod
+
+FROM nginx:stable
+
+COPY --from=builder /app/webui/dist /usr/share/nginx/html
+
+# docker build -t wasaphoto-frontend:latest -f Dockerfile.frontend .
+# docker run -it --rm -p 8080:80 wasaphoto-frontend:latest

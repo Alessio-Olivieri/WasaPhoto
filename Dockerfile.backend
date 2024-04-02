@@ -1,0 +1,18 @@
+FROM golang:1.17-bullseye AS builder
+
+WORKDIR /src/
+COPY . .
+
+RUN go build -o /app/webapi ./cmd/webapi
+
+FROM debian:bullseye
+
+EXPOSE 3000
+
+WORKDIR /app/
+COPY --from=builder /app/webapi ./
+
+CMD ["/app/webapi"]
+
+# docker build -t wasaphoto-backend:latest -f Dockerfile.backend .
+# docker run -it --rm -p 3000:3000 wasaphoto-backend:latest
