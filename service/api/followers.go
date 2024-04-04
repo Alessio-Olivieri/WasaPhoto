@@ -33,7 +33,7 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	message = message + "profile_username: " + strconv.FormatUint(profileId, 10) + "\n"
 
-	//check if you banned the user
+	// check if you banned the user
 	banned, err := rt.db.IsBanned(ctx.UserId, profileId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "Error checking if user is banned")
@@ -45,7 +45,7 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	//check if the user banned you
+	// check if the user banned you
 	banned, err = rt.db.IsBanned(profileId, ctx.UserId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "Error checking if user is banned")
@@ -57,7 +57,7 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	//putting follow
+	// putting follow
 	err = rt.db.PutFollower(ctx.UserId, profileId)
 	if errors.Is(database.ErrAlreadyFollowed, err) {
 		ctx.Logger.Info(message + "OK: User is already following the profile")
@@ -96,7 +96,7 @@ func (rt *_router) delete_follower(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	//check if you banned the user
+	// check if you banned the user
 	banned, err := rt.db.IsBanned(ctx.UserId, profileId)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -109,7 +109,7 @@ func (rt *_router) delete_follower(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	//check if the user banned you
+	// check if the user banned you
 	banned, err = rt.db.IsBanned(profileId, ctx.UserId)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -122,7 +122,7 @@ func (rt *_router) delete_follower(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	//deleteing follow
+	// deleteing follow
 	err = rt.db.DeleteFollower(ctx.UserId, profileId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "Error deleting follower from the database")

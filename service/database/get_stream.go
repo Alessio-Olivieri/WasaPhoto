@@ -10,7 +10,7 @@ import (
 func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Stream, error) {
 	var stream schemas.Stream
 	var totalPosts int
-	//retrieve the total number of posts
+	// retrieve the total number of posts
 	err := db.c.QueryRow(`SELECT count(*) FROM 
 		photos INNER JOIN users ON users.user_id = photos.user_id
 		WHERE 

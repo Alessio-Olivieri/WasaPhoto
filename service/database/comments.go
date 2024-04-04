@@ -45,11 +45,11 @@ func (db *appdbimpl) PostComment(photo_id uint64, user_id uint64, text string) (
 }
 
 func (db *appdbimpl) DeleteComment(comment_id uint64, user_id uint64) error {
-	//check if user is authorized
+	// check if user is authorized
 	var authorized bool
 	var exists bool
 
-	//check if comment exists
+	// check if comment exists
 	err := db.c.QueryRow("SELECT true FROM Comments WHERE comment_id = ?", comment_id).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
 		return ErrCommentNotExists

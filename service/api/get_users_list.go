@@ -21,7 +21,6 @@ func (rt *_router) get_users_list(w http.ResponseWriter, r *http.Request, ps htt
 	users_list := ""
 
 	for _, username := range users {
-		//fmt.Println(username) //display list in terminal
 		users_list += username + ", "
 	}
 

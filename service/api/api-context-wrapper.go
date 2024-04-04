@@ -43,17 +43,11 @@ func (rt *_router) wrap(fn httpRouterHandler, authRequired bool) func(http.Respo
 
 		// Add the user id to the context if it's available
 		if authRequired {
-			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
-				ctx.Logger.Error("Authorization-header: missing")
-				w.WriteHeader(http.StatusUnauthorized)
-				return
-			}
 			ctx.UserId, err = ExtractId_from_Bearer(r.Header.Get("Authorization"))
 			if err != nil {
-				ctx.Logger.Error(err)
+				ctx.Logger.WithError(err).Error("ERROR wrap: ")
 				ctx.UserId = 0
-				w.WriteHeader(http.StatusInternalServerError)
+				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 		}

@@ -6,11 +6,11 @@ import (
 )
 
 func (db *appdbimpl) DeletePost(post_id uint64, user_id uint64) error {
-	//check if user is authorized
+	// check if user is authorized
 	var authorized bool
 	var exists bool
 
-	//check if photo exists
+	// check if photo exists
 	err := db.c.QueryRow("SELECT true FROM Photos WHERE photo_id = ?", post_id).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
 		return ErrPhotoNotExists

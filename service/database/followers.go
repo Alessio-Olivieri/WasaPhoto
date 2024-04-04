@@ -1,7 +1,7 @@
 package database
 
 func (db *appdbimpl) PutFollower(follower_id uint64, followed_id uint64) error {
-	//check if follow exists
+	// check if follow exists
 	exists, err := db.IsFollowing(follower_id, followed_id)
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (db *appdbimpl) GetFollowersAmount(followed_id uint64) (int, error) {
 }
 
 func (db *appdbimpl) DeleteFollower(follower_id uint64, followed_id uint64) error {
-	//check if follow exists
+	// check if follow exists
 	exists, err := db.IsFollowing(follower_id, followed_id)
 	if err != nil {
 		return err

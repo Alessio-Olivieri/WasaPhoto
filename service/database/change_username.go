@@ -1,7 +1,7 @@
 package database
 
 func (db *appdbimpl) Update_username(userId uint64, username string) error {
-	//check if username is already taken
+	// check if username is already taken
 	var exists bool
 	exists, err := db.Exists_user(username)
 	if err != nil {

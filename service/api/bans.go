@@ -29,7 +29,7 @@ func (rt *_router) put_ban(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 	message = message + "profile_username: " + profile_username + "\n"
 
-	//putting ban
+	// putting ban
 	err = rt.db.PutBan(ctx.UserId, profileId)
 	if errors.Is(err, database.ErrBanAlreadyExists) {
 		ctx.Logger.WithError(err).Error(message + "User was already banned\n")
@@ -42,7 +42,7 @@ func (rt *_router) put_ban(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	//removing follow
+	// removing follow
 	err = rt.db.DeleteFollower(ctx.UserId, profileId)
 	if errors.Is(err, database.ErrFollowNotExists) {
 		message = message + "User was already unfollowed\n"
@@ -83,7 +83,7 @@ func (rt *_router) delete_ban(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	//delete ban
+	// delete ban
 	err = rt.db.DeleteBan(ctx.UserId, profileId)
 	if errors.Is(err, database.ErrBanNotExists) {
 		ctx.Logger.WithError(err).Error("DATABASE DeleteBan")

@@ -32,7 +32,7 @@ func (rt *_router) put_like(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	//putting like
+	// putting like
 	err = rt.db.PutLike(photo_id, ctx.UserId)
 	if errors.Is(err, database.ErrPhotoNotExists) {
 		ctx.Logger.WithError(err).Error(message + "Error: photo does not exist")
@@ -114,7 +114,7 @@ func (rt *_router) delete_like(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	//deleting like
+	// deleting like
 	err = rt.db.DeleteLike(photo_id, ctx.UserId)
 	if errors.Is(err, database.ErrPhotoNotExists) {
 		ctx.Logger.WithError(err).Error(message + "Error: photo does not exist")

@@ -8,7 +8,7 @@ import (
 
 // GetName is an example that shows you how to query data
 func (db *appdbimpl) Get_userId_from_username(username string) (uint64, error) {
-	//check if user exists
+	// check if user exists
 	exists, err := db.Exists_user(username)
 	if err != nil {
 		return 18446744073709551615, err
@@ -31,7 +31,7 @@ func (db *appdbimpl) Get_userId_from_username(username string) (uint64, error) {
 
 // GetName is an example that shows you how to query data
 func (db *appdbimpl) Get_username_from_userId(userId uint64) (string, error) {
-	//check if user exists
+	// check if user exists
 	exists, err := db.Exists_user(userId)
 	if err != nil {
 		return "", err

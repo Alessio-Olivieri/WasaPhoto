@@ -31,7 +31,7 @@ func (rt *_router) get_stream(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 	message = message + "Page number: " + strconv.FormatInt(page_number, 10) + "\n"
 
-	//retrieve the stream
+	// retrieve the stream
 	stream, err := rt.db.Get_stream(ctx.UserId, int(page_number))
 	if errors.Is(err, database.ErrEmptyStream) {
 		ctx.Logger.WithError(err).Error(message + "No posts in the stream")

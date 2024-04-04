@@ -56,7 +56,7 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	message = message + "User has not banned you" + "\n"
 
-	//build the response
+	// build the response
 	var response schemas.GetUserProfile
 
 	// Get profile followers
@@ -69,10 +69,10 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	response.Followers = followers
 	message = message + "Followers: " + strconv.Itoa(len(followers)) + "\n"
 
-	//add followerscount to response
+	// add followerscount to response
 	response.Followers_count = len(followers)
 
-	//determine if the reqeusting user is following the profile_user
+	// determine if the reqeusting user is following the profile_user
 	isFollowing, err := rt.db.IsFollowing(ctx.UserId, userId_profile)
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "Error determining follower status")
@@ -82,7 +82,7 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	response.IsFollowing = isFollowing
 	message = message + "Requesting user is not following " + profile_username + "\n"
 
-	//determine if the requesting user has banned the profile_user
+	// determine if the requesting user has banned the profile_user
 	isBanned, err := rt.db.IsBanned(ctx.UserId, userId_profile)
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "Error determining ban status")
@@ -92,7 +92,7 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	response.IsBanned = isBanned
 	message = message + "Requesting user has not banned " + profile_username + "\n"
 
-	//retrieve photos of the user_profile
+	// retrieve photos of the user_profile
 	post_list, err := rt.db.Get_user_photos(ctx.UserId, userId_profile)
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "Error retrieving posts")

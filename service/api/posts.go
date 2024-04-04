@@ -24,7 +24,7 @@ func (rt *_router) post_photo(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	//get caption from request
+	// get caption from request
 	caption := r.FormValue("caption")
 	emptyComment := regexp.MustCompile(`^\s*(?:#.*|\bundefined\b|\s*)$`)
 	empty_caption := false
@@ -33,7 +33,7 @@ func (rt *_router) post_photo(w http.ResponseWriter, r *http.Request, ps httprou
 		empty_caption = true
 	}
 
-	//get photo from request
+	// get photo from request
 	file, _, err := r.FormFile("picture")
 	empty_picture := false
 	if err != nil {
@@ -107,7 +107,7 @@ func (rt *_router) delete_photo(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	//deleting photo
+	// deleting photo
 	err = rt.db.DeletePost(photo_id, ctx.UserId)
 	if errors.Is(err, database.ErrPhotoNotExists) {
 		ctx.Logger.WithError(err).Error(message + "DATABASE ERROR: DeletePost:")

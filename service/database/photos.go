@@ -27,7 +27,7 @@ func (db *appdbimpl) Make_photo(user_id uint64, caption string, picture multipar
 		return schemas.Post{}, err
 	}
 
-	//get username for the response
+	// get username for the response
 	username, err := db.Get_username_from_userId(user_id)
 	if err != nil {
 		return schemas.Post{}, err

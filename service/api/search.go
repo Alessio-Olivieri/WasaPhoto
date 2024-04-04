@@ -42,7 +42,6 @@ func (rt *_router) search_users(w http.ResponseWriter, r *http.Request, ps httpr
 	users_list := ""
 
 	for _, username := range users {
-		//fmt.Println(username) //display list in terminal
 		users_list += username + ", "
 	}
 	message = message + "Users found: " + users_list + "\n"
