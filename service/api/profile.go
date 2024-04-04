@@ -23,7 +23,7 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	profile_username := ps.ByName("username")
 	if profile_username == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		return
 	}
 	message = message + "profile_username: " + profile_username + "\n"

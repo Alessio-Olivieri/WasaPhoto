@@ -19,6 +19,9 @@ func (db *appdbimpl) PostComment(photo_id uint64, user_id uint64, text string) (
 	if errors.Is(err, sql.ErrNoRows) {
 		return comment, ErrPhotoNotExists
 	}
+	if err != nil {
+		return comment, err
+	}
 
 	banned, err := db.IsBanned(user_id_photo, user_id)
 	if err != nil {
@@ -79,6 +82,9 @@ func (db *appdbimpl) GetComments(photo_id uint64) ([]schemas.Comment, error) {
 	rows, err := db.c.Query(`SELECT comment_id, user_id, text, date FROM Comments WHERE photo_id = ?`, photo_id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return comments, ErrPhotoNotExists
+	}
+	if err != nil {
+		return comments, err
 	}
 
 	for rows.Next() {

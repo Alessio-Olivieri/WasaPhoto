@@ -19,7 +19,7 @@ func (rt *_router) put_like(w http.ResponseWriter, r *http.Request, ps httproute
 	// Extract the photo_id from the path parameters
 	photo_id_s := ps.ByName("photo_id")
 	if photo_id_s == "" {
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -101,7 +101,7 @@ func (rt *_router) delete_like(w http.ResponseWriter, r *http.Request, ps httpro
 	// Extract the photo_id from the path parameters
 	photo_id_s := ps.ByName("photo_id")
 	if photo_id_s == "" {
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

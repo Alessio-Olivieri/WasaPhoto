@@ -33,8 +33,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-	"log"
 	"mime/multipart"
 
 	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
@@ -121,11 +119,10 @@ type appdbimpl struct {
 // New returns a new instance of AppDatabase based on the SQLite connection `db`.
 // `db` is required - an error will be returned if `db` is `nil`.
 func New(db *sql.DB) (AppDatabase, error) {
-	log.Println("[BUILDING DATABASE STRUCTURE]")
+	// message := "[BUILDING DATABASE STRUCTURE]\n"
 	if db == nil {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
-
 	TableMapping := map[string]string{
 		"Users":     usersTableCreationStatement,
 		"Photos":    photosTableCreationStatement,
@@ -135,21 +132,19 @@ func New(db *sql.DB) (AppDatabase, error) {
 		"Bans":      bansTableCreationStatement,
 	}
 	for tableName, tableCreationStatement := range TableMapping {
-		fmt.Printf(" checking for table %s:\n", tableName)
-		// Check if table exists. If not, the database is empty, and we need to create the structure
-
+		// Check if table exists. If not, we need to create the structure
 		err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name= ? ;`, tableName).Scan(&tableName)
 		if errors.Is(err, sql.ErrNoRows) {
-			fmt.Printf("  creating database %s\n", tableName)
+			// message = message + "creating table: " + tableName + "\n"
 			_, err = db.Exec(tableCreationStatement)
 			if err != nil {
-				return nil, fmt.Errorf("   error creating database structure: %w", err)
+				return nil, errors.New("error building table " + tableName)
 			}
 		} else {
-			fmt.Printf("  table %s already exists\n", tableName)
+			// message = message + "table " + tableName + " exists\n"
 		}
 	}
-	log.Println("[DATABASE STRUCTURE CREATED]")
+	// log.Println(message + "[DATABASE STRUCTURE CREATED]")
 
 	return &appdbimpl{
 		c: db,

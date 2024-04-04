@@ -1,8 +1,11 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 )
+
+var ErrUserNotExists = errors.New("username parameter missing in request path")
 
 // Handler returns an instance of httprouter.Router that handle APIs registered here
 func (rt *_router) Handler() http.Handler {

@@ -56,9 +56,15 @@ func (db *appdbimpl) Exists_user(identifier interface{}) (bool, error) {
 	case string:
 		// Identifier is a username
 		err = db.c.QueryRow("SELECT TRUE FROM Users WHERE username = ?", v).Scan(&exists)
+		if err != nil {
+			return exists, err
+		}
 	case uint64:
 		// Identifier is a user ID
 		err = db.c.QueryRow("SELECT TRUE FROM Users WHERE user_id = ?", v).Scan(&exists)
+		if err != nil {
+			return exists, err
+		}
 	default:
 		return false, errors.New("Exists_user: invalid identifier type")
 	}

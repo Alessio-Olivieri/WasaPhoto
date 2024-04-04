@@ -16,7 +16,7 @@ func (rt *_router) put_ban(w http.ResponseWriter, r *http.Request, ps httprouter
 	// Extract the username from the path parameters
 	profile_username := ps.ByName("username")
 	if profile_username == "" {
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -27,7 +27,7 @@ func (rt *_router) put_ban(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	message = message + "profile_username: " + profile_username + "\n"
+	message = message + profile_username + "\n"
 
 	// putting ban
 	err = rt.db.PutBan(ctx.UserId, profileId)
@@ -65,11 +65,11 @@ func (rt *_router) delete_ban(w http.ResponseWriter, r *http.Request, ps httprou
 	// Extract the username from the path parameters
 	profile_username := ps.ByName("username")
 	if profile_username == "" {
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	message = message + "profile_username: " + profile_username + "\n"
+	message = message + profile_username + "\n"
 
 	profileId, err := rt.db.Get_userId_from_username(profile_username)
 	if errors.Is(err, database.ErrUserNotExists) {

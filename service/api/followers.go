@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/Alessio-Olivieri/wasaProject/service/api/reqcontext"
 	"github.com/Alessio-Olivieri/wasaProject/service/database"
@@ -20,10 +19,10 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 	profile_username := ps.ByName("username")
 	if profile_username == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		return
 	}
-	message = message + "profile_username: " + profile_username + "\n"
+	message = message + profile_username + "\n"
 
 	profileId, err := rt.db.Get_userId_from_username(profile_username)
 	if err != nil {
@@ -31,7 +30,6 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 		ctx.Logger.WithError(err).Error(message + "Error getting userId from Username")
 		return
 	}
-	message = message + "profile_username: " + strconv.FormatUint(profileId, 10) + "\n"
 
 	// check if you banned the user
 	banned, err := rt.db.IsBanned(ctx.UserId, profileId)
@@ -84,10 +82,10 @@ func (rt *_router) delete_follower(w http.ResponseWriter, r *http.Request, ps ht
 	profile_username := ps.ByName("username")
 	if profile_username == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		return
 	}
-	message = message + "profile_username: " + profile_username + "\n"
+	message = message + profile_username + "\n"
 
 	profileId, err := rt.db.Get_userId_from_username(profile_username)
 	if err != nil {

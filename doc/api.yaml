@@ -5,10 +5,14 @@ info:
     API for the project the course of WASA
   version: 0.5.0
 paths:
-  /login?username={username}:
+  /login:
     parameters:
-      - $ref: '#/components/parameters/username'
+      - name: username
+        in: query
+        description: the username of the user doing login
         required: true
+        schema:
+          $ref: '#/components/parameters/username'
     post:
       tags: ["login"]
       operationId: doLogin
@@ -32,6 +36,8 @@ paths:
           
   /settings/username:
     put:
+      security:
+        - bearerAuth: []
       tags: ["settings"]
       operationId: setMyUserName
       summary: Sets the username of the authenticated user
@@ -56,15 +62,19 @@ paths:
         '500':
           $ref: "#/components/responses/ServerError"
 
-  /stream?=page={page}:
+  /stream:
     parameters:
       - name: page
         in: query
         description: the offset of posts of the stream
         required: true
         schema:
-          $ref: '#/components/schemas/numerical'
+          type: integer
+          maximum: 999999999
+          minimum: 0
     get:
+      security:
+        - bearerAuth: []
       tags: ["stream"]
       operationId: getMyStream 
       summary: ask for the stream of the user, specified by user_id which is inferred by auth token 
@@ -90,9 +100,11 @@ paths:
     parameters:
       - $ref: '#/components/parameters/username' 
     get:
+      security:
+        - bearerAuth: []
       tags: ['profile']
       summary: request the profile of the user, specified by username
-      operationId: getProfileUser 
+      operationId: getUserProfile 
       responses:
         '200':
           description: return the photos of the user in reverse chronological order
@@ -116,10 +128,19 @@ paths:
         "500":
           $ref: "#/components/responses/ServerError"
 
-  /users/?=username={username}:
+  /users/:
     parameters:
-      - $ref: '#/components/parameters/username'
+      - name: username
+        in: query
+        description: |
+          the user searched for.
+          it can be also a substring
+        required: true
+        schema:
+          $ref: '#/components/parameters/username'
     get:
+      security:
+        - bearerAuth: []
       operationId: searchUser
       description: |-
         Get lists of possible users
@@ -146,6 +167,8 @@ paths:
 
   /photos/:
     post:
+      security:
+        - bearerAuth: []
       tags: ["photo"]
       summary: uploads a picture for the user
       operationId: uploadPhoto
@@ -177,6 +200,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/post_id'
     delete:
+      security:
+        - bearerAuth: []
       tags: ['photo']
       operationId: deletePhoto
       
@@ -203,6 +228,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/post_id'
     post:
+      security:
+        - bearerAuth: []
       tags: ['comment']
       operationId: commentPhoto
       
@@ -242,6 +269,8 @@ paths:
       - $ref: '#/components/parameters/post_id'
       - $ref: '#/components/parameters/comment_id'
     delete:
+      security:
+        - bearerAuth: []
       tags: ['comment']
       operationId: uncommentPhoto
       summary: deletes the 
@@ -270,6 +299,8 @@ paths:
       - $ref: '#/components/parameters/post_id'
       - $ref: '#/components/parameters/username'
     put:
+      security:
+        - bearerAuth: []
       tags: ['like']
       operationId: likePhoto
       summary: likes the picture, returns '200' if the picture is already liked
@@ -293,6 +324,8 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
+      security:
+        - bearerAuth: []
       tags: ['like']
       operationId: unlikePhoto
       summary: unlikes the photo
@@ -320,6 +353,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/username'
     put:
+      security:
+        - bearerAuth: []
       tags: ['follow']
       operationId: followUser
       summary: add a follower
@@ -344,6 +379,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   
     delete:
+      security:
+        - bearerAuth: []
       tags: ['follow']
       operationId: unfollowUser
       summary: removes a follower
@@ -372,6 +409,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/username' 
     put:
+      security:
+        - bearerAuth: []
       tags: ['ban']
       operationId: banUser
       summary: ban a user
@@ -391,6 +430,8 @@ paths:
           $ref: "#/components/responses/ServerError"
 
     delete:
+      security:
+        - bearerAuth: []
       tags: ['ban']
       operationId: unbanUser
       summary: unban a user
@@ -674,7 +715,7 @@ components:
       example: "pippo"
       pattern: '^[a-zA-Z0-9._-]+$'
       minLength: 3
-      maxLength: 10
+      maxLength: 25
     
     date:
       description: |
@@ -726,6 +767,3 @@ components:
         according to the project specification.
       type: http
       scheme: bearer
-
-security: 
-  - bearerAuth: []

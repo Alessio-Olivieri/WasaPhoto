@@ -40,5 +40,8 @@ func (db *appdbimpl) Make_photo(user_id uint64, caption string, picture multipar
 func (db *appdbimpl) Exists_photo(photo_id uint64) (bool, error) {
 	var exists bool
 	err := db.c.QueryRow("SELECT EXISTS(SELECT 1 FROM Photos WHERE photo_id = ?)", photo_id).Scan(&exists)
+	if err != nil {
+		return exists, err
+	}
 	return exists, err
 }

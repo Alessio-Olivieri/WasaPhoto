@@ -21,7 +21,7 @@ func (rt *_router) search_users(w http.ResponseWriter, r *http.Request, ps httpr
 	searched_user := r.URL.Query().Get("username")
 	if searched_user == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		ctx.Logger.Error(message + "Error: Username parameter missing in request path")
+		ctx.Logger.Error(message + ErrUserNotExists.Error())
 		return
 	}
 	message = message + "User to search: " + searched_user + "\n"
