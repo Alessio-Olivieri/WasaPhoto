@@ -7,12 +7,7 @@ info:
 paths:
   /login:
     parameters:
-      - name: username
-        in: query
-        description: the username of the user doing login
-        required: true
-        schema:
-          $ref: '#/components/parameters/username_query'
+      - $ref: '#/components/parameters/username_query'
     post:
       tags: ["login"]
       operationId: doLogin
@@ -124,14 +119,7 @@ paths:
 
   /users/:
     parameters:
-      - name: username
-        in: query
-        description: |
-          the user searched for.
-          it can be also a substring
-        required: true
-        schema:
-          $ref: '#/components/parameters/username_query'
+      - $ref: '#/components/parameters/username_query'
     get:
       security:
         - bearerAuth: []
