@@ -59,7 +59,7 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 	err = rt.db.PutFollower(ctx.UserId, profileId)
 	if errors.Is(database.ErrAlreadyFollowed, err) {
 		ctx.Logger.Info(message + "OK: User is already following the profile")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 	if err != nil {
@@ -68,7 +68,7 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusNoContent)
 	ctx.Logger.Info(message)
 }
 
@@ -132,6 +132,6 @@ func (rt *_router) delete_follower(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 	ctx.Logger.Info(message)
 }

@@ -117,6 +117,6 @@ func (rt *_router) delete_comment(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 	ctx.Logger.Info(message + "Comment deleted successfully")
 }

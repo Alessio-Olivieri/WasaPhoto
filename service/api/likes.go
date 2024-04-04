@@ -46,7 +46,7 @@ func (rt *_router) put_like(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 	if errors.Is(err, database.ErrAlreadyLiked) {
 		ctx.Logger.Info(message + "OK: photo already liked")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 	if err != nil {
@@ -55,7 +55,7 @@ func (rt *_router) put_like(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusNoContent)
 	ctx.Logger.Info(message + "Success")
 }
 

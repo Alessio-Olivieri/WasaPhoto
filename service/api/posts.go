@@ -126,5 +126,5 @@ func (rt *_router) delete_photo(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	ctx.Logger.Info(message + "Photo deleted successfully")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }

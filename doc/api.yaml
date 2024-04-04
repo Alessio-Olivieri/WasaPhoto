@@ -12,7 +12,7 @@ paths:
         description: the username of the user doing login
         required: true
         schema:
-          $ref: '#/components/parameters/username'
+          $ref: '#/components/parameters/username_query'
     post:
       tags: ["login"]
       operationId: doLogin
@@ -52,7 +52,7 @@ paths:
         required: true
       responses:
         '200':
-          description: Username set successfully, return the id of the user
+          description: Username changed successfully
         '400':
           $ref: "#/components/responses/BadRequestError"
         '401':
@@ -85,7 +85,6 @@ paths:
           content:
             application/json:
               schema:
-                description: the photos of the user in reverse chronological order
                 $ref: '#/components/schemas/stream'    
         '400':
           $ref: '#/components/responses/BadRequestError'
@@ -98,7 +97,7 @@ paths:
 
   /users/{username}:  
     parameters:
-      - $ref: '#/components/parameters/username' 
+      - $ref: '#/components/parameters/username_path' 
     get:
       security:
         - bearerAuth: []
@@ -111,20 +110,15 @@ paths:
           content:
             application/json:
               schema:
-                description: the photos of the user in reverse chronological order
                 $ref: '#/components/schemas/user_profile'
         '400':
           description: username is not valid or empty
-          $ref: '#/components/responses/BadRequestError'
         "401":
           description: user is not authenticated
-          $ref: "#/components/responses/AuthorizationError"
         "403":
           description: user is banned
-          $ref: "#/components/responses/ForbiddenError"
         "404":
           description: user with requested username not exists
-          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -137,7 +131,7 @@ paths:
           it can be also a substring
         required: true
         schema:
-          $ref: '#/components/parameters/username'
+          $ref: '#/components/parameters/username_query'
     get:
       security:
         - bearerAuth: []
@@ -190,7 +184,6 @@ paths:
           description: |
             if neither the photo nor the content are provided
             or the request is not in the correct format
-          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '500':
@@ -204,22 +197,18 @@ paths:
         - bearerAuth: []
       tags: ['photo']
       operationId: deletePhoto
-      
       summary: deletes the photo
       responses:
         "204":
           description: photo deleted or photo already didn't exist
         "400":
           description: photo_id is not valid
-          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "403":
           description: you're not authorized to delete the photo
-          $ref: '#/components/responses/ForbiddenError'
         "404":
           description: photo not found
-          $ref: '#/components/responses/NotFoundError'
         "500":
           $ref: '#/components/responses/ServerError'
                 
@@ -232,7 +221,6 @@ paths:
         - bearerAuth: []
       tags: ['comment']
       operationId: commentPhoto
-      
       summary: uploads a comment on the picture
       requestBody:
         description: the photo to be uploaded
@@ -243,7 +231,7 @@ paths:
         required: true
       responses:
         '201':
-          description: succesfull operation, returns id of the comment
+          description: succesfull operation, returns the comment
           content:
             application/json:
               schema:
@@ -252,12 +240,10 @@ paths:
           description: |
             if the content is not provided
             or the request is not in the correct format
-          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "403":
           description: you're not authorized to comment the photo (banned)
-          $ref: '#/components/responses/ForbiddenError'
         "404":
           description: photo not found
           $ref: '#/components/responses/NotFoundError'
@@ -278,26 +264,23 @@ paths:
         The post_id is just a placeholder, 
         the comment_id is the only one that matters
       responses:
-        "200":
+        "204":
           description: comment deleted
         "400":
           description: comment_id is not valid
-          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "403":
           description: you're not authorized to delete the comment
-          $ref: '#/components/responses/ForbiddenError'
         "404":
           description: comment not found
-          $ref: '#/components/responses/NotFoundError'
         "500":
           $ref: '#/components/responses/ServerError'
 
   /photos/{post_id}/likes/{username}:
     parameters:
       - $ref: '#/components/parameters/post_id'
-      - $ref: '#/components/parameters/username'
+      - $ref: '#/components/parameters/username_path'
     put:
       security:
         - bearerAuth: []
@@ -306,21 +289,16 @@ paths:
       summary: likes the picture, returns '200' if the picture is already liked
       description: the logged user likes the picture, returns '200' if the picture is already liked
       responses:
-        '201':
-          description: like created
-        '200':
-          description: like already exists
+        '204':
+          description: like created or already exists
         '400':
           description: post_id is not valid
-          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '403':
           description: you're not authorized to like the photo
-          $ref: '#/components/responses/ForbiddenError'
         '404':
           description: photo not found
-          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
@@ -332,26 +310,23 @@ paths:
       
       description: remove the like of user from the photo
       responses:
-        '200':
+        '204':
           description: like removed
         '400':
           description: post_id is not valid
-          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '403':
           description: you're not authorized to unlike the photo
-          $ref: '#/components/responses/ForbiddenError'
         '404':
           description: photo not found or like not found
-          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/ServerError'
 
           
   /followed/{username}/:
     parameters:
-      - $ref: '#/components/parameters/username'
+      - $ref: '#/components/parameters/username_path'
     put:
       security:
         - bearerAuth: []
@@ -363,18 +338,14 @@ paths:
         add a user to the followers list of the authenticated user
         return 200 if the user is already in the list
       responses:
-        '200':
-          description: user already in followings
-        '201':
-          description: user added to followings succesfully
+        '204':
+          description: user already in followings or user added to followings succesfully
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
           description: you're not authorized to add the user
-          $ref: '#/components/responses/AuthorizationError'
         '403':
           description: you're not authorized to add the user
-          $ref: '#/components/responses/ForbiddenError'
         '500':
           $ref: '#/components/responses/ServerError'
   
@@ -388,26 +359,22 @@ paths:
       description: |
         remove a user from the followers list of the authenticated user
       responses:
-        '200':
+        '204':
           description: user removed from followings 
         '400':
           description: username is not valid
-          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '403':
           description: you're not authorized to interact with the user
-          $ref: '#/components/responses/ForbiddenError'
         '404':
-          description: 
-            the user is not in the followings list
-          $ref: "#/components/responses/NotFoundError"
+          description: the user is not in the followings list
         '500':
           $ref: '#/components/responses/ServerError'
   
   /banned/{username}/:
     parameters:
-      - $ref: '#/components/parameters/username' 
+      - $ref: '#/components/parameters/username_path' 
     put:
       security:
         - bearerAuth: []
@@ -417,13 +384,10 @@ paths:
       description: |
         add a user to the banned list of the authenticated user
       responses:
-        '201':
-          description: user banned 
-        '200':
-          description: user already banned
+        '204':
+          description: user banned or user already banned
         '400': 
           description: user_id is not valid
-          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '500': 
@@ -438,17 +402,16 @@ paths:
       description: |
         remove a user to from the banned list of the authenticated user
       responses:
-        '200':
+        '204':
           description: user unbanned succesfully
         '400':
           description: user_id is not valid
-          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '404':
           description: user not found in the banned list
-          $ref: "#/components/responses/NotFoundError"
-        '500': { $ref: "#/components/responses/ServerError" }
+        '500': 
+          $ref: "#/components/responses/ServerError"
 
 
 components:
@@ -486,13 +449,22 @@ components:
       schema:
         $ref: '#/components/schemas/object_id'
 
-    username:
+    username_path:
+      name: username
+      in: path
+      description: the username of the user
+      required: true
+      schema:
+        $ref: '#/components/schemas/username'
+
+    username_query:
       name: username
       in: query
       description: the username of the user
       required: true
       schema:
         $ref: '#/components/schemas/username'
+    
         
   responses:
     BadRequestError:
@@ -549,7 +521,7 @@ components:
       items:
         $ref: '#/components/schemas/username'
       minItems: 0
-      maxItems: 99999
+      maxItems: 18446744073709551615
       uniqueItems: true
 
     user_profile:
@@ -565,9 +537,9 @@ components:
         followers_count:
           $ref: '#/components/schemas/numerical'
         IsBanned:
-          $ref: '#/components/schemas/boolean'
+          type: boolean
         IsFollowing:
-          $ref: '#/components/schemas/boolean'
+          type: boolean
         posts:
           type: array
           items:
@@ -575,7 +547,6 @@ components:
           minItems: 0
           maxItems: 10
         
-    
     comment:
       description: |
         the comment of the user on a photo
@@ -583,31 +554,17 @@ components:
       example: "Che bella foto!!!"
       properties:
         comment_id:
-          description: the unique identifier of the comment
           $ref: '#/components/schemas/object_id'
         post_id:
-          description: the unique identifier of the photo to which the comment belongs
           $ref: '#/components/schemas/object_id'
         username:
-          description: the username of the user that posted the comment
           $ref: '#/components/schemas/username'
         user_id:
-          description: the unique identifier of the user that posted the comment
           $ref: '#/components/schemas/object_id'
         content:
-          description: the content of the comment
           $ref: '#/components/schemas/text'
         date:
           $ref: "#/components/schemas/date" 
-    
-    comments:
-      description: List of the comments of the photo
-      type: array
-      items:
-        $ref: '#/components/schemas/comment'
-      minItems: 0
-      maxItems: 99999
-      uniqueItems: true
       
     post_photo:
       description: 
@@ -615,13 +572,10 @@ components:
       type: object
       properties:
         photo:
-          description: the photo to be uploaded
           $ref: '#/components/schemas/picture'
         content:
-          description: the content of the photo
           $ref: '#/components/schemas/text'
         user_id:
-          description: the unique identifier of the user posting the photo
           $ref: '#/components/schemas/object_id'
 
     likes: 
@@ -631,13 +585,11 @@ components:
         type: object
         properties: 
           user_id:
-            description: 'the id of the user that puts the like'
             $ref: '#/components/schemas/object_id'
           photo_id:
-            description: the id of the photo where the like has been put
             $ref: '#/components/schemas/object_id'
       minItems: 0
-      maxItems: 99999
+      maxItems: 18446744073709551615
       uniqueItems: true
 
     stream:
@@ -647,17 +599,15 @@ components:
         posts:
           $ref: '#/components/schemas/posts'
         number_of_pages:
-          description: the total number of pages (a page is 10 posts) of the stream
           $ref: '#/components/schemas/numerical'
         current_page:
-          description: the current page of the stream
           $ref: '#/components/schemas/numerical'
 
     posts:
       type: array
+      description: List of the posts
       items:
         $ref: '#/components/schemas/post' 
-      description: List of the posts
       minItems: 0
       maxItems: 10
 
@@ -665,54 +615,38 @@ components:
       type: object
       properties:
         post_id:
-          description: unique identifier of the post
           $ref: "#/components/schemas/object_id"
         content:
-          description: the caption
           $ref: "#/components/schemas/text"
         username:
-          description: username of the author
           $ref: "#/components/schemas/username"
         user_id:
-          description: Unique identifier of the authorized
           $ref: "#/components/schemas/object_id"
         likes_count:
-          description: Number of likes on the post
           $ref: "#/components/schemas/numerical"
         likes:
-          description: List of usernames who liked the post
           $ref: "#/components/schemas/likes"
         is_liked:
-          description: True if the requesting user liked the post
           $ref: "#/components/schemas/boolean"
         comments:
           type: array
+          description: List of comments on the post
           items:
             $ref: '#/components/schemas/comment'  
-          description: List of comments on the post
         date:
-          description: Date of the post (epoch timestamp in milliseconds?)
-          type: string
           $ref: "#/components/schemas/date"
         picture:
-          description: Base64 encoded image data
           $ref: "#/components/schemas/picture"
 
     object_id:
-      description: |
-        the unique identifier of the user, photo, like, comment
-        it is a string of 24 characters
-      type: integer
-      example: 4902
-      maximum: 18446744073709551615 # 2^64-1 
-      minimum: 0
+      $ref: '#/components/schemas/numerical'
 
     username:
       description: |
         the username of the user
         it is a string of 10 characters
       type: string
-      example: "pippo"
+      example: pippo
       pattern: '^[a-zA-Z0-9._-]+$'
       minLength: 3
       maxLength: 25
@@ -734,7 +668,7 @@ components:
 
     numerical:
       description: |
-        general integer data
+        general integer
       type: integer
       example: 4902
       maximum: 18446744073709551615 # 2^64-1 

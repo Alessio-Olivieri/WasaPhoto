@@ -33,7 +33,7 @@ func (rt *_router) put_ban(w http.ResponseWriter, r *http.Request, ps httprouter
 	err = rt.db.PutBan(ctx.UserId, profileId)
 	if errors.Is(err, database.ErrBanAlreadyExists) {
 		ctx.Logger.WithError(err).Error(message + "User was already banned\n")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 	if err != nil {
@@ -52,7 +52,7 @@ func (rt *_router) put_ban(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusNoContent)
 	ctx.Logger.Info(message + "Ban inserted in the database")
 }
 
@@ -96,6 +96,6 @@ func (rt *_router) delete_ban(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 	ctx.Logger.Info(message)
 }
