@@ -3,7 +3,20 @@ info:
   title: WasaPhoto
   description: |
     API for the project the course of WASA
-  version: 0.5.0
+  version: 3.0.0
+
+tags: 
+  - name: login
+  - name: settings
+  - name: Stream
+  - name: profile
+  - name: user
+  - name: photo
+  - name: Comment
+  - name: like
+  - name: follow
+  - name: ban
+  
 paths:
   /login:
     parameters:
@@ -22,7 +35,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/object_id'
+                $ref: '#/components/schemas/Object_id'
         '500':
           $ref: '#/components/responses/ServerError'
         '400':
@@ -43,7 +56,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/username'
+              $ref: '#/components/schemas/Username'
         required: true
       responses:
         '200':
@@ -61,7 +74,7 @@ paths:
     parameters:
       - name: page
         in: query
-        description: the offset of posts of the stream
+        description: the offset of posts of the Stream
         required: true
         schema:
           type: integer
@@ -70,9 +83,9 @@ paths:
     get:
       security:
         - bearerAuth: []
-      tags: ["stream"]
+      tags: ["Stream"]
       operationId: getMyStream 
-      summary: ask for the stream of the user, specified by user_id which is inferred by auth token 
+      summary: ask for the Stream of the user, specified by user_id which is inferred by auth token 
       responses:
         '200':
           description: |
@@ -80,7 +93,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/stream'    
+                $ref: '#/components/schemas/Stream'    
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -105,15 +118,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_profile'
+                $ref: '#/components/schemas/User_profile'
         '400':
-          description: username is not valid or empty
+          $ref: '#/components/responses/BadRequestError'
         "401":
-          description: user is not authenticated
+          $ref: "#/components/responses/AuthorizationError"
         "403":
-          description: user is banned
+          $ref: '#/components/responses/ForbiddenError'
         "404":
-          description: user with requested username not exists
+          $ref: '#/components/responses/NotFoundError'
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -136,13 +149,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/userlist"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
+                type: object
+                properties:
+                  users:
+                    $ref: "#/components/schemas/Userlist"
+        '400':
+          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: "#/components/responses/AuthorizationError"
         "404":
-          $ref: "#/components/responses/NotFoundError"
+          $ref: '#/components/responses/NotFoundError'
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -152,14 +168,14 @@ paths:
       security:
         - bearerAuth: []
       tags: ["photo"]
-      summary: uploads a picture for the user
+      summary: uploads a Picture for the user
       operationId: uploadPhoto
       requestBody:
         description: the photo to be uploaded
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/post_photo'
+              $ref: '#/components/schemas/Post_photo'
         required: true
       responses:
         '201':
@@ -167,11 +183,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/post'
+                $ref: '#/components/schemas/Post'
         '400':
-          description: |
-            if neither the photo nor the content are provided
-            or the request is not in the correct format
+          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '500':
@@ -190,13 +204,13 @@ paths:
         "204":
           description: photo deleted or photo already didn't exist
         "400":
-          description: photo_id is not valid
+          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "403":
-          description: you're not authorized to delete the photo
+          $ref: '#/components/responses/ForbiddenError'
         "404":
-          description: photo not found
+          $ref: '#/components/responses/NotFoundError'
         "500":
           $ref: '#/components/responses/ServerError'
                 
@@ -207,33 +221,30 @@ paths:
     post:
       security:
         - bearerAuth: []
-      tags: ['comment']
+      tags: ['Comment']
       operationId: commentPhoto
-      summary: uploads a comment on the picture
+      summary: uploads a Comment on the Picture
       requestBody:
         description: the photo to be uploaded
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/text'
+              $ref: '#/components/schemas/Text'
         required: true
       responses:
         '201':
-          description: succesfull operation, returns the comment
+          description: succesfull operation, returns the Comment
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/comment'
+                $ref: '#/components/schemas/Comment'
         '400':
-          description: |
-            if the content is not provided
-            or the request is not in the correct format
+          $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "403":
-          description: you're not authorized to comment the photo (banned)
+          $ref: '#/components/responses/ForbiddenError'
         "404":
-          description: photo not found
           $ref: '#/components/responses/NotFoundError'
         "500":
           $ref: '#/components/responses/ServerError'
@@ -245,7 +256,7 @@ paths:
     delete:
       security:
         - bearerAuth: []
-      tags: ['comment']
+      tags: ['Comment']
       operationId: uncommentPhoto
       summary: deletes the 
       description: |
@@ -253,17 +264,17 @@ paths:
         the comment_id is the only one that matters
       responses:
         "204":
-          description: comment deleted
-        "400":
-          description: comment_id is not valid
+          description: Comment deleted
+        '400':
+          $ref: '#/components/responses/BadRequestError'
         "401":
-          $ref: '#/components/responses/AuthorizationError'
+          $ref: "#/components/responses/AuthorizationError"
         "403":
-          description: you're not authorized to delete the comment
+          $ref: '#/components/responses/ForbiddenError'
         "404":
-          description: comment not found
+          $ref: '#/components/responses/NotFoundError'
         "500":
-          $ref: '#/components/responses/ServerError'
+          $ref: "#/components/responses/ServerError"
 
   /photos/{post_id}/likes/{username}:
     parameters:
@@ -274,21 +285,21 @@ paths:
         - bearerAuth: []
       tags: ['like']
       operationId: likePhoto
-      summary: likes the picture, returns '200' if the picture is already liked
-      description: the logged user likes the picture, returns '200' if the picture is already liked
+      summary: likes the Picture, returns '200' if the Picture is already liked
+      description: the logged user likes the Picture, returns '200' if the Picture is already liked
       responses:
         '204':
           description: like created or already exists
         '400':
-          description: post_id is not valid
-        '401':
-          $ref: '#/components/responses/AuthorizationError'
-        '403':
-          description: you're not authorized to like the photo
-        '404':
-          description: photo not found
-        '500':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: "#/components/responses/AuthorizationError"
+        "403":
+          $ref: '#/components/responses/ForbiddenError'
+        "404":
+          $ref: '#/components/responses/NotFoundError'
+        "500":
+          $ref: "#/components/responses/ServerError"
     delete:
       security:
         - bearerAuth: []
@@ -301,15 +312,15 @@ paths:
         '204':
           description: like removed
         '400':
-          description: post_id is not valid
-        '401':
-          $ref: '#/components/responses/AuthorizationError'
-        '403':
-          description: you're not authorized to unlike the photo
-        '404':
-          description: photo not found or like not found
-        '500':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: "#/components/responses/AuthorizationError"
+        "403":
+          $ref: '#/components/responses/ForbiddenError'
+        "404":
+          $ref: '#/components/responses/NotFoundError'
+        "500":
+          $ref: "#/components/responses/ServerError"
 
           
   /followed/{username}/:
@@ -330,12 +341,12 @@ paths:
           description: user already in followings or user added to followings succesfully
         '400':
           $ref: '#/components/responses/BadRequestError'
-        '401':
-          description: you're not authorized to add the user
-        '403':
-          description: you're not authorized to add the user
-        '500':
-          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: "#/components/responses/AuthorizationError"
+        "403":
+          $ref: '#/components/responses/ForbiddenError'
+        "500":
+          $ref: "#/components/responses/ServerError"
   
     delete:
       security:
@@ -350,15 +361,15 @@ paths:
         '204':
           description: user removed from followings 
         '400':
-          description: username is not valid
-        '401':
-          $ref: '#/components/responses/AuthorizationError'
-        '403':
-          description: you're not authorized to interact with the user
-        '404':
-          description: the user is not in the followings list
-        '500':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: "#/components/responses/AuthorizationError"
+        "403":
+          $ref: '#/components/responses/ForbiddenError'
+        "404":
+          $ref: '#/components/responses/NotFoundError'
+        "500":
+          $ref: "#/components/responses/ServerError"
   
   /banned/{username}/:
     parameters:
@@ -375,7 +386,7 @@ paths:
         '204':
           description: user banned or user already banned
         '400': 
-          description: user_id is not valid
+          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '500': 
@@ -393,14 +404,13 @@ paths:
         '204':
           description: user unbanned succesfully
         '400':
-          description: user_id is not valid
-        '401':
-          $ref: '#/components/responses/AuthorizationError'
-        '404':
-          description: user not found in the banned list
-        '500': 
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: "#/components/responses/AuthorizationError"
+        "404":
+          $ref: '#/components/responses/NotFoundError'
+        "500":
           $ref: "#/components/responses/ServerError"
-
 
 components:
   parameters:
@@ -408,10 +418,10 @@ components:
     comment_id: 
       name: comment_id
       in: path
-      description: The comment id
+      description: The Comment id
       required: true
       schema:
-        $ref: '#/components/schemas/object_id'
+        $ref: '#/components/schemas/Object_id'
     
     user_id: 
       name: user_id
@@ -419,7 +429,7 @@ components:
       description: The username of the user
       required: true
       schema:
-        $ref: '#/components/schemas/object_id'
+        $ref: '#/components/schemas/Object_id'
         
     post_id:
       name: post_id
@@ -427,7 +437,7 @@ components:
       description: identificative of the photo
       required: true
       schema:
-        $ref: '#/components/schemas/object_id'
+        $ref: '#/components/schemas/Object_id'
         
     like_id:
       name: like_id
@@ -435,7 +445,7 @@ components:
       description: identificative of the like (the username of the person who put like)
       required: true
       schema:
-        $ref: '#/components/schemas/object_id'
+        $ref: '#/components/schemas/Object_id'
 
     username_path:
       name: username
@@ -443,7 +453,7 @@ components:
       description: the username of the user
       required: true
       schema:
-        $ref: '#/components/schemas/username'
+        $ref: '#/components/schemas/Username'
 
     username_query:
       name: username
@@ -451,36 +461,36 @@ components:
       description: the username of the user
       required: true
       schema:
-        $ref: '#/components/schemas/username'
+        $ref: '#/components/schemas/Username'
     
         
   responses:
     BadRequestError:
       description: request not compliant with REST API specifications.
       content:
-        text/plain:
-          schema: { $ref: "#/components/schemas/error" }
+        Text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
 
     ConflictError:
       description: |
         the request could not be completed due to a conflict with the current state of the resource.
       content:
-        text/plain:
-          schema: { $ref: "#/components/schemas/error" }
+        Text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
 
     ServerError:
       description: an unexpected condition was encountered while handling the request.
       content:
-        text/plain:
-          schema: { $ref: "#/components/schemas/error" }
+        Text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
 
     AuthorizationError:
       description: |
         An authenticated session is requested to access this endpoint,
         but no valid authentication was included in the request.
       content:
-        text/plain:
-          schema: { $ref: "#/components/schemas/error" }
+        Text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
     
     ForbiddenError:
       description: |
@@ -490,171 +500,171 @@ components:
         necessary permissions for handling the requested resource or 
         because the user was attempting a prohibited action.
       content:
-        text/plain:
-          schema: { $ref: "#/components/schemas/error" }
+        Text/plain:
+          schema: { $ref: "#/components/schemas/Error" }
     
     NotFoundError:
       description: |
         the resource was not found
       content:
         application/json:
-          schema: { $ref: "#/components/schemas/error" }
+          schema: { $ref: "#/components/schemas/Error" }
 
         
   schemas:
 
-    userlist:
+    Userlist:
       description: a list of usernames
       type: array
       items:
-        $ref: '#/components/schemas/username'
+        $ref: '#/components/schemas/Username'
       minItems: 0
       maxItems: 18446744073709551615
       uniqueItems: true
 
-    user_profile:
+    User_profile:
       description: everything from the user
       type: object
       properties:
         username:
-          $ref: '#/components/schemas/username'
+          $ref: '#/components/schemas/Username'
         user_id:
-          $ref: '#/components/schemas/object_id'
+          $ref: '#/components/schemas/Object_id'
         followers:
-          $ref: '#/components/schemas/userlist'
+          $ref: '#/components/schemas/Userlist'
         followers_count:
-          $ref: '#/components/schemas/numerical'
-        IsBanned:
+          $ref: '#/components/schemas/Numerical'
+        is_banned:
           type: boolean
-        IsFollowing:
+        is_following:
           type: boolean
         posts:
           type: array
           items:
-            $ref: '#/components/schemas/post'
+            $ref: '#/components/schemas/Post'
           minItems: 0
           maxItems: 10
         
-    comment:
+    Comment:
       description: |
-        the comment of the user on a photo
+        the Comment of the user on a photo
       type: object
-      example: "Che bella foto!!!"
       properties:
         comment_id:
-          $ref: '#/components/schemas/object_id'
+          $ref: '#/components/schemas/Object_id'
         post_id:
-          $ref: '#/components/schemas/object_id'
+          $ref: '#/components/schemas/Object_id'
         username:
-          $ref: '#/components/schemas/username'
+          $ref: '#/components/schemas/Username'
         user_id:
-          $ref: '#/components/schemas/object_id'
+          $ref: '#/components/schemas/Object_id'
         content:
-          $ref: '#/components/schemas/text'
-        date:
-          $ref: "#/components/schemas/date" 
+          $ref: '#/components/schemas/Text'
+        Date:
+          $ref: "#/components/schemas/Date" 
       
-    post_photo:
+    Post_photo:
       description: 
         Schema for handling the photo upload
       type: object
       properties:
         photo:
-          $ref: '#/components/schemas/picture'
+          $ref: '#/components/schemas/Picture'
         content:
-          $ref: '#/components/schemas/text'
+          $ref: '#/components/schemas/Text'
         user_id:
-          $ref: '#/components/schemas/object_id'
+          $ref: '#/components/schemas/Object_id'
 
-    likes: 
+    Likes: 
       description: List of unique identifiers of the users who liked a photo
       type: array
       items:
         type: object
         properties: 
           user_id:
-            $ref: '#/components/schemas/object_id'
+            $ref: '#/components/schemas/Object_id'
           photo_id:
-            $ref: '#/components/schemas/object_id'
+            $ref: '#/components/schemas/Object_id'
       minItems: 0
       maxItems: 18446744073709551615
       uniqueItems: true
 
-    stream:
-      description: List of the photos of the users followed by the current user in descending order of date
+    Stream:
+      description: List of the photos of the users followed by the current user in descending order of Date
       type: object
       properties:
         posts:
-          $ref: '#/components/schemas/posts'
+          $ref: '#/components/schemas/Posts'
         number_of_pages:
-          $ref: '#/components/schemas/numerical'
+          $ref: '#/components/schemas/Numerical'
         current_page:
-          $ref: '#/components/schemas/numerical'
+          $ref: '#/components/schemas/Numerical'
 
-    posts:
-      type: array
+    Posts:
       description: List of the posts
+      type: array
       items:
-        $ref: '#/components/schemas/post' 
+        $ref: '#/components/schemas/Post' 
       minItems: 0
       maxItems: 10
 
-    post:
+    Post:
+      description: |
+        the post of the user
       type: object
       properties:
         post_id:
-          $ref: "#/components/schemas/object_id"
+          $ref: "#/components/schemas/Object_id"
         content:
-          $ref: "#/components/schemas/text"
+          $ref: "#/components/schemas/Text"
         username:
-          $ref: "#/components/schemas/username"
+          $ref: "#/components/schemas/Username"
         user_id:
-          $ref: "#/components/schemas/object_id"
+          $ref: "#/components/schemas/Object_id"
         likes_count:
-          $ref: "#/components/schemas/numerical"
+          $ref: "#/components/schemas/Numerical"
         likes:
-          $ref: "#/components/schemas/likes"
+          $ref: "#/components/schemas/Likes"
         is_liked:
-          $ref: "#/components/schemas/boolean"
+          type: boolean
         comments:
           type: array
           description: List of comments on the post
           items:
-            $ref: '#/components/schemas/comment'  
-        date:
-          $ref: "#/components/schemas/date"
-        picture:
-          $ref: "#/components/schemas/picture"
+            $ref: '#/components/schemas/Comment'  
+        Date:
+          $ref: "#/components/schemas/Date"
+        Picture:
+          $ref: "#/components/schemas/Picture"
 
-    object_id:
-      $ref: '#/components/schemas/numerical'
+    Object_id:
+      $ref: '#/components/schemas/Numerical'
 
-    username:
+    Username:
       description: |
         the username of the user
-        it is a string of 10 characters
       type: string
       example: pippo
       pattern: '^[a-zA-Z0-9._-]+$'
       minLength: 3
       maxLength: 25
     
-    date:
+    Date:
       description: |
-        A general schema that represents a date
+        A general schema that represents a Date
       type: integer
       format: int64
 
-    text:
+    Text:
       description: |
-        A general schema for a long text
+        A general schema for a long Text
       type: string
       example: "Che bella foto!!!"
       pattern: '^[a-zA-Z0-9.,;:#"!?=)(/(_-]+$'
       maxLength: 1000
       minLength: 1
 
-    numerical:
+    Numerical:
       description: |
         general integer
       type: integer
@@ -662,19 +672,16 @@ components:
       maximum: 18446744073709551615 # 2^64-1 
       minimum: 0
 
-    boolean:
-      description: |
-        general boolean data
-      type: boolean
-
-    picture:
+    Picture:
       description: Base64 encoded image data
       type: string
       format: byte
+      minLength: 0
+      maxLength: 9999999999999999999
 
-    error:
+    Error:
       description: |
-        general error, the particulars are in the properties
+        general Error, the particulars are in the properties
       type: string
       minLength: 0
       maxLength: 250

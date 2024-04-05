@@ -291,7 +291,7 @@ export default {
 						},
 					});
 				this.profile_data.data.followers_count = this.profile_data.data.followers_count + 1
-				this.profile_data.data.isFollowing=true
+				this.profile_data.data.is_following=true
 				if (this.profile_data.data.followers == null){
 					this.profile_data.data.followers = []
 				}
@@ -331,7 +331,7 @@ export default {
 					}
 				});
 				this.profile_data.data.followers_count = this.profile_data.data.followers_count - 1
-				this.profile_data.data.isFollowing=false
+				this.profile_data.data.is_following=false
 				this.profile_data.data.followers.splice(
 					this.profile_data.data.followers.findIndex(
 						follower => follower === sessionStorage.getItem('username')
@@ -372,8 +372,8 @@ export default {
 							'Authorization': this.authToken,
 						},
 					});
-				this.profile_data.data.isBanned = true
-				this.profile_data.data.isFollowing = false
+				this.profile_data.data.is_banned = true
+				this.profile_data.data.is_following = false
 				this.message = ""
 			} catch (error) {
 				const statusCode = error.response.status;
@@ -402,7 +402,7 @@ export default {
 						'Authorization': this.authToken
 					}
 				});
-				this.profile_data.data.isBanned = false
+				this.profile_data.data.is_banned = false
 				this.message = ""
 			} catch (error) {
 				if (error.response){
@@ -471,10 +471,10 @@ export default {
 			<p v-if="message != ''">Error: {{ message }} </p>
 			<div v-if="profile_data">
 				<div v-if="!isItMe">
-					<button v-if="!profile_data.data.isFollowing && !profile_data.data.isBanned" @click="follow()">Follow</button>
-					<button v-if="profile_data.data.isFollowing" @click="unfollow()">Unfollow</button>
-					<button v-if="!profile_data.data.isBanned" @click="ban">Ban</button>
-					<button v-if="profile_data.data.isBanned" @click="unban">Unban</button>
+					<button v-if="!profile_data.data.is_following && !profile_data.data.is_banned" @click="follow()">Follow</button>
+					<button v-if="profile_data.data.is_following" @click="unfollow()">Unfollow</button>
+					<button v-if="!profile_data.data.is_banned" @click="ban">Ban</button>
+					<button v-if="profile_data.data.is_banned" @click="unban">Unban</button>
 				</div>
 				Number of followers: {{profile_data.data.followers_count}}
 				<button v-if="!show_followers" @click="(show_followers = true)">show followers</button>
