@@ -1,6 +1,5 @@
 <script>
 const authToken = sessionStorage.getItem('authToken');
-const username = sessionStorage.getItem('username');
 export default {
     data: function() {
         return {
@@ -8,6 +7,7 @@ export default {
             loading: false,
             userId: null,
             search_result : null,
+            username: "",
         }
     },
     methods: {
@@ -57,30 +57,102 @@ export default {
 </script>
 
 <template>
-    <div class="login-container">
-        <LoadingSpinner v-if="loading"></LoadingSpinner>
-        <div class="login-form">
-            <h2>Search.</h2>
-            <form @submit.prevent="search">
-                <label class="login-label" for="username">User to search:</label>
-                <input type="text" id="username" v-model="username" required minlength="3" maxlength="20"
-                    style="padding: 6px;" />
-                <button type="submit" class="btn btn-sm btn-outline-primary"
-                    style="padding: 8px; font-size: 15px;">Search <svg class="feather">
-                        <use href="/feather-sprite-v4.29.0.svg#search" />
-                    </svg></button>
-            </form>
-            <div v-if="search_result != null">
-                <p>Search completed</p>
-                <ul>
-                    <li v-for="username in search_result" :key="username">
-                        <router-link :to="'/users/' + username">{{ username }}</router-link>
-                    </li>
-                </ul>
-            </div>
-        </div>
+    <div class="search-container">
+      <h2>Search.</h2>
+      <form @submit.prevent="search" class="search-form">
+        <label for="username" class="search-form__label">User to search:</label>
+        <input
+          type="text"
+          id="username"
+          v-model="username"
+          required
+          minlength="3"
+          maxlength="20"
+          class="search-form__input"
+        />
+        <button type="submit" class="search-form__button">
+          Search <svg class="feather">
+            <use href="/feather-sprite-v4.29.0.svg#search" />
+          </svg>
+        </button>
+      </form>
+      <div v-if="search_result != null" class="search-results">
+        <p>Search completed</p>
+        <ul class="search-results__list">
+          <li v-for="username in search_result" :key="username" class="search-results__item">
+            <router-link :to="'/users/' + username">{{ username }}</router-link>
+          </li>
+        </ul>
+      </div>
     </div>
-</template>
-
-<style>
-</style>
+  </template>
+  
+  <style scoped>
+  .search-container {
+    /* Add your styles for the main container here */
+    background-color: #f5f5f5; /* Light gray background */
+    border: 1px solid #ddd; /* Thin border */
+    padding: 20px; /* Padding for inner elements */
+    border-radius: 5px; /* Rounded corners */
+    width: 400px; /* Set a fixed width */
+    margin: 0 auto; /* Center the container horizontally */
+  }
+  
+  .search-form {
+    display: flex;
+    gap: 10px; /* Spacing between form elements */
+    align-items: center; /* Align label and input vertically */
+  }
+  
+  .search-form__label {
+    font-weight: bold;
+    color: #333; /* Darker text color */
+  }
+  
+  .search-form__input,
+  .search-form__button {
+    border: none; /* Remove default border */
+    background-color: #fff; /* White background for input/button */
+    padding: 8px; /* Consistent padding */
+    border-radius: 3px; /* Rounded corners */
+    box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+    transition: all 0.2s ease-in-out; /* Add smooth transitions on hover */
+  }
+  
+  .search-form__input:hover,
+  .search-form__button:hover {
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+  }
+  
+  .search-form__button {
+    cursor: pointer; /* Indicate clickable button */
+    background-color: #333; /* Darker background for button */
+    color: #fff; /* White text color for button */
+    padding: 10px 15px; /* Adjust padding for better button size */
+  }
+  
+  .search-results {
+    /* Add styles for the search results container here */
+    margin-top: 20px; /* Spacing after the form */
+  }
+  
+  .search-results__list {
+    list-style: none; /* Remove default bullet points */
+    padding: 0; /* Reset padding for better spacing */
+  }
+  
+  .search-results__item {
+    margin-bottom: 5px; /* Spacing between results */
+  }
+  
+  .search-results__item a { /* Style the router-link */
+    color: #333; /* Darker text color for links */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.2s ease-in-out; /* Smooth color transition on hover */
+  }
+  
+  .search-results__item a:hover {
+    color: #007bff; /* Blue color on hover */
+  }
+  </style>
+  

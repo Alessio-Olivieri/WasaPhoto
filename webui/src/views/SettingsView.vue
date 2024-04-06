@@ -59,19 +59,75 @@ export default{
 
 
 <template>
-    <div class="login-container">
-        <LoadingSpinner v-if="loading"></LoadingSpinner>
-        <div class="login-form">
-            <h3 v-if="message!=null">{{ message }}</h3>
-            <form @submit.prevent="Update_username">
-                <label class="login-label" for="username">Current username: {{ this.username }}</label>
-                <input type="text" id="new_username_box" v-model="new_username" required minlength="3" maxlength="20"
-                    style="padding: 6px;" />
-                <button type="submit" class="btn btn-sm btn-outline-primary"
-                    style="padding: 8px; font-size: 15px;">Update username <svg class="feather">
-                    </svg></button>
-            </form>
-            <p v-if="username_update_completed">Search completed</p>
-        </div>
+    <div class="update-username">
+      <LoadingSpinner v-if="loading"></LoadingSpinner>
+      <div class="update-form">
+        <h3 v-if="message" class="update-message">{{ message }}</h3>
+        <form @submit.prevent="Update_username" class="update-form__form">
+          <label for="username" class="update-form__label">Current username: {{ this.username }}</label>
+          <input
+            type="text"
+            id="new_username_box"
+            v-model="new_username"
+            required
+            minlength="3"
+            maxlength="20"
+            class="update-form__input"
+          />
+          <button type="submit" class="update-form__button">
+            Update username <svg class="feather">
+            </svg>
+          </button>
+        </form>
+        <p v-if="username_update_completed" class="update-message">Update completed</p>
+      </div>
     </div>
-</template>
+  </template>
+  
+  <style scoped>
+  .update-username {
+    /* Add your styles for the main container here */
+    background-color: #f5f5f5; /* Light gray background */
+    border: 1px solid #ddd; /* Thin border */
+    padding: 20px; /* Padding for inner elements */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    width: 400px; /* Set a fixed width */
+    margin: 0 auto; /* Center the container horizontally */
+  }
+  
+  .update-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Spacing between form elements */
+  }
+  
+  .update-message,
+  .update-form__label {
+    font-weight: bold;
+    color: #333; /* Darker text color */
+    font-family: monospace; /* Monospaced font for CSV look */
+  }
+  
+  .update-form__input,
+  .update-form__button {
+    border: none; /* Remove default border */
+    background-color: #fff; /* White background for input/button */
+    padding: 8px; /* Consistent padding */
+    border-radius: 3px; /* Rounded corners */
+    box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+    transition: all 0.2s ease-in-out; /* Add smooth transitions on hover */
+  }
+  
+  .update-form__input:hover,
+  .update-form__button:hover {
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+  }
+  
+  .update-form__button {
+    cursor: pointer; /* Indicate clickable button */
+    background-color: #333; /* Darker background for button */
+    color: #fff; /* White text color for button */
+  }
+  </style>
+  
