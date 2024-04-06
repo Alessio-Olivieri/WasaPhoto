@@ -48,6 +48,7 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Strea
 		}
 		return stream, err
 	}
+	defer rows.Close()
 
 	stream.Posts, err = db.retrievePosts(rows)
 	if err != nil {

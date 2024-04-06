@@ -134,14 +134,16 @@ func New(db *sql.DB) (AppDatabase, error) {
 	for tableName, tableCreationStatement := range TableMapping {
 		// Check if table exists. If not, we need to create the structure
 		err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name= ? ;`, tableName).Scan(&tableName)
-		if errors.Is(err, sql.ErrNoRows) {
-			// message = message + "creating table: " + tableName + "\n"
-			_, err = db.Exec(tableCreationStatement)
-			if err != nil {
-				return nil, errors.New("error building table " + tableName)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				// message = message + "creating table: " + tableName + "\n"
+				_, err = db.Exec(tableCreationStatement)
+				if err != nil {
+					return nil, errors.New("error building table " + tableName)
+				}
+			} else {
+				return nil, errors.New("error checking table " + tableName)
 			}
-		} else {
-			return nil, err
 		}
 	}
 	return &appdbimpl{

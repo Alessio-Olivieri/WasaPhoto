@@ -108,6 +108,8 @@ func (db *appdbimpl) GetLikes(photo_id uint64) ([]string, error) {
 	if err != nil {
 		return likes, err
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		var likeId uint64
 		err = rows.Scan(&likeId)

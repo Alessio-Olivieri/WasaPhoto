@@ -17,6 +17,7 @@ func (db *appdbimpl) Get_user_photos(user_id_request uint64, user_id_profile uin
 	if err != nil {
 		return postList, err
 	}
+	defer rows.Close()
 
 	postList, err = db.retrievePosts(rows)
 	if err != nil {

@@ -4,10 +4,10 @@ package database
 // Returns 18446744073709551615 if the user does not exist
 func (db *appdbimpl) Login_db(username string) (uint64, error) {
 	rows, err := db.c.Query("SELECT user_id FROM Users WHERE username = ?;", username)
-	defer rows.Close()
 	if err != nil {
 		return 18446744073709551615, err
 	}
+	defer rows.Close()
 
 	var user_id uint64
 	if rows.Next() {
