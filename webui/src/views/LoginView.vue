@@ -6,6 +6,7 @@ export default {
             errormsg: null,
             loading: false,
             userId: null,
+            message: ""
         }
     },
     methods: {
@@ -43,6 +44,7 @@ export default {
 
 <template>
     <div class="login-container">
+		<h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
         <LoadingSpinner v-if="loading"></LoadingSpinner>
         <div class="login-form">
             <h2>Autenticati.</h2>

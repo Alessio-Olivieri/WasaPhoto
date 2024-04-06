@@ -244,37 +244,55 @@ export default {
 </script>
 
 <template>
-	<div>
+	<div class="general">
 		<h1>This is the stream of {{ username }}</h1>
-		<h2 v-if="message!=''">{{ message }}</h2>
-		<div v-if="stream_data!=null" class="post-container">
-			<button v-if="page_number!=0" @click="getStream(stream_data.data.page_number-1)">previous page</button>
-			<button v-if="page_number!=0 && page_number-3>0" @click="getStream(stream_data.data.page_number-3)">{{ page_number-3 }}</button>
-			<button v-if="page_number!=0 && page_number-2>0" @click="getStream(stream_data.data.page_number-2)">{{ page_number-2 }}</button>
-			<button v-if="page_number!=0 && page_number-1>0" @click="getStream(stream_data.data.page_number-1)">{{ page_number-1 }}</button>
-			{{ page_number }} 
-			<button v-if="page_number+1<=stream_data.data.number_of_pages" @click="getStream(stream_data.data.page_number+1)">{{ page_number+1 }}</button>
-			<button v-if="page_number+2<=stream_data.data.number_of_pages" @click="getStream(stream_data.data.page_number+2)">{{ page_number+2 }}</button>
-			<button v-if="page_number+3<=stream_data.data.number_of_pages" @click="getStream(stream_data.data.page_number+3)">{{ page_number+3 }}</button>
-			<button v-if="page_number+1<=stream_data.data.number_of_pages" @click="getStream(page_number+1)">next page</button>
-			<div v-for="post in stream_data.data.posts" :key="post.post_id" class="post">
-				<div class="post-content">
+		<h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
+		<div v-if="stream_data!=null" class="stream-container">
+			<div class="btn-group btn-group-toggle" data-toggle="buttons">
+				<label v-if="page_number!=0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-1)">
+					previous page
+				</label>
+				<label v-if="page_number!=0 && page_number-3>0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-3)">
+					{{ page_number-3 }}
+				</label>
+				<label v-if="page_number!=0 && page_number-2>0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-2)">
+					{{ page_number-2 }}
+				</label>
+				<label v-if="page_number!=0 && page_number-1>0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-1)">
+					{{ page_number-1 }}
+				</label>
+				<label class="btn btn-dark active">{{ page_number }} </label>
+				<label v-if="page_number+1<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(stream_data.data.page_number+1)">
+					{{ page_number+1 }}
+				</label>
+				<label v-if="page_number+2<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(stream_data.data.page_number+2)">
+					{{ page_number+2 }}
+				</label>
+				<label v-if="page_number+3<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(stream_data.data.page_number+3)">
+					{{ page_number+3 }}
+				</label>
+				<label v-if="page_number+1<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(page_number+1)">
+					next page
+				</label>
+			</div>
+			<div v-for="post in stream_data.data.posts" :key="post.post_id" class="post-container">
+				<div class="post-data ">
 					<router-link :to="'/users/' + post.username">@{{ post.username }} </router-link>
-					<p v-if="post.content != 'undefined'">{{ post.content }}</p>
+					<p v-if="post.content != 'null'">{{ post.content }}</p>
 					<p>Likes: {{ post.likes_count }}</p>
-					<button v-if="!post.is_liked" @click="likePost(post)">Like</button>
-					<button v-if="post.is_liked" @click="unLikePost(post)">un-Like</button>
+					<button v-if="!post.is_liked" @click="likePost(post)" class="btn btn-dark">Like</button>
+					<button v-if="post.is_liked" @click="unLikePost(post)" class="btn btn-dark">un-Like</button>
 				</div>
 				<img v-if="post.image" :src="`data:image/png;base64,${post.image}`" alt="Post Image" class="post-image">
 				<div v-if="!post.showCommentBox">
-					<button @click="(post.showCommentBox = true)">Add Comment</button>
+					<button @click="(post.showCommentBox = true)" class="btn btn-dark">Add Comment</button>
 				</div>
 				<div v-else>
 					<textarea v-model="post.commentText" placeholder="Enter your comment"></textarea>
-					<button @click="addComment(post)">Post Comment</button>
+					<button @click="addComment(post)" class="btn btn-dark">Post Comment</button>
 				</div>
 				<div v-if="post.comments!=null" class="comments">
-					<button v-if="!post.showComments" @click="post.showComments=true">Show Comments</button>
+					<button v-if="!post.showComments" @click="post.showComments=true" class="btn btn-dark">Show Comments</button>
 					<div v-else>
 						<h4 class="comments-heading">Comments:</h4>
 						<div v-for="(comment,comment_index) in post.comments" :key="comment.comment_id" class="comments">
@@ -283,72 +301,115 @@ export default {
 									<router-link :to="'/users/' + comment.username">@{{ comment.username }} </router-link>
 									: {{ comment.content }}
 								</p>
-								<button v-if="authToken.slice(7) == comment.user_id" @click="removeComment(post, comment_index)">Delete comment</button>
+								<button v-if="authToken.slice(7) == comment.user_id" @click="removeComment(post, comment_index)" class="btn btn-dark">Delete comment</button>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			<div class="btn-group btn-group-toggle" data-toggle="buttons">
+				<label v-if="page_number!=0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-1)">
+					previous page
+				</label>
+				<label v-if="page_number!=0 && page_number-3>0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-3)">
+					{{ page_number-3 }}
+				</label>
+				<label v-if="page_number!=0 && page_number-2>0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-2)">
+					{{ page_number-2 }}
+				</label>
+				<label v-if="page_number!=0 && page_number-1>0" class="btn btn-dark" @click="getStream(stream_data.data.page_number-1)">
+					{{ page_number-1 }}
+				</label>
+				<label class="btn btn-dark active">{{ page_number }} </label>
+				<label v-if="page_number+1<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(stream_data.data.page_number+1)">
+					{{ page_number+1 }}
+				</label>
+				<label v-if="page_number+2<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(stream_data.data.page_number+2)">
+					{{ page_number+2 }}
+				</label>
+				<label v-if="page_number+3<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(stream_data.data.page_number+3)">
+					{{ page_number+3 }}
+				</label>
+				<label v-if="page_number+1<=stream_data.data.number_of_pages" class="btn btn-dark" @click="getStream(page_number+1)">
+					next page
+				</label>
+			</div>
 		</div>		
 	</div>
   </template>
   
-  <style>
- /* Basic styles for the post container */
- .post-container {
-	margin: 1rem 0;
-	border: 1px solid #ddd;
-	padding: 1rem;
-	border-radius: 5px;
-  }
-  
-  /* Styles for the photos heading */
-  .photos-heading {
-	font-weight: bold;
-	margin-bottom: 0.5rem;
-  }
-  
-  /* Styles for each post */
-  .post {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd; /* Add border */
-  padding: 1rem; /* Add padding */
-  border-radius: 5px; /* Add border radius */
-}
-  
-  /* Styles for post image with fixed size and centering */
-  .post-image {
-	width: 150px;
-	height: 150px;
-	object-fit: cover;
-	margin-bottom: 1rem;
-	border: 1px solid #3f8317;
-  }
-  
-  /* Styles for post content area */
-  .post-content {
-	text-align: center;
-  }
-  
-  /* Styles for comments heading */
-  .comments-heading {
-	font-weight: bold;
-	margin-top: 0.5rem;
-  }
-  
-  /* Styles for individual comments */
-  .comments {
-	margin-bottom: 0.25rem;
+  <style scoped>
+  .alert-primary {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 20px;
   }
 
-  .comment{
-	  border: 1px solid #ddd;
-	  padding: 0.5rem;
-	  border-radius: 5px;
+  .general {
+	text-align: center;
   }
-  </style>
+
+  .btn-group {
+    margin-bottom: 10px;
+  }
+
+  .btn-group label {
+    margin-right: 5px;
+  }
+
+  .btn-group .btn-dark {
+    background-color: #333;
+  }
+  .btn-group .btn-dark:hover {
+    background-color: #555;
+  }
+
+  .stream-container {
+    background-color: #f9f9f9;	text-align: center;
+
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .post-container {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .post-data {
+	margin-bottom: 10px;
+  }
+
+  .post-image {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .comments-heading {
+    margin-top: 10px;
+  }
+
+  .comments .comment {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  textarea {
+	width: 100%;
+	height: 80px;
+	resize: none;
+	margin-bottom: 10px;
+  }
+  
+</style>
 
   

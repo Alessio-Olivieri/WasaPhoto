@@ -62,7 +62,7 @@ export default{
     <div class="update-username">
       <LoadingSpinner v-if="loading"></LoadingSpinner>
       <div class="update-form">
-        <h3 v-if="message" class="update-message">{{ message }}</h3>
+        <h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
         <form @submit.prevent="Update_username" class="update-form__form">
           <label for="username" class="update-form__label">Current username: {{ this.username }}</label>
           <input

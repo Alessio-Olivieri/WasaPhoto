@@ -8,6 +8,7 @@ export default {
             userId: null,
             search_result : null,
             username: "",
+            message: ""
         }
     },
     methods: {
@@ -57,6 +58,7 @@ export default {
 </script>
 
 <template>
+  <h2 class="alert alert-primary" v-if="message">{{ message }}</h2>
     <div class="search-container">
       <h2>Search.</h2>
       <form @submit.prevent="search" class="search-form">

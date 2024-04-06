@@ -458,124 +458,193 @@ export default {
 
 <template>
 	<div>
-		<h3 v-if="message != ''">{{ message }}</h3>
-		<div v-if="loggedIn">
-			<h1>{{ $route.params.username }}</h1>
-			<div v-if="isItMe">
-				<RouterLink to="/settings">
-					<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#settings"/></svg>
-					Profile settings
-				</RouterLink>			
-			</div>
-			<p>This is the profile page of {{ $route.params.username }}</p>
-			<p v-if="message != ''">Error: {{ message }} </p>
-			<div v-if="profile_data">
-				<div v-if="!isItMe">
-					<button v-if="!profile_data.data.is_following && !profile_data.data.is_banned" @click="follow()">Follow</button>
-					<button v-if="profile_data.data.is_following" @click="unfollow()">Unfollow</button>
-					<button v-if="!profile_data.data.is_banned" @click="ban">Ban</button>
-					<button v-if="profile_data.data.is_banned" @click="unban">Unban</button>
-				</div>
-				Number of followers: {{profile_data.data.followers_count}}
-				<button v-if="!show_followers" @click="(show_followers = true)">show followers</button>
-				<button v-if="show_followers" @click="(show_followers = false)">hide followers</button>
-				<p v-if="show_followers">Followers:
-					<label v-for="username in profile_data.data.followers" :key="username">
-						<router-link :to="'/users/' + username"> @{{ username }} </router-link>
-					</label>
-				</p>
-				<div v-if="profile_data.data.posts" class="post-container">
-					<h3 class="photos-heading">Photos:</h3>
-					<div v-for="(post, post_index) in profile_data.data.posts" :key="post.post_id" class="post">						<div class="post-content">
-							<p v-if="post.content != 'undefined'">{{ post.content }}</p>
-							<p>Likes: {{ post.likes_count }}</p>
-							<button v-if="!post.is_liked" @click="likePost(post)">Like</button>
-							<button v-if="post.is_liked" @click="unLikePost(post)">un-Like</button>
-						</div>
-						<img v-if="post.image" :src="`data:image/png;base64,${post.image}`" alt="Post Image" class="post-image">
-						<button v-if="isItMe" @click="removePost(post_index)"> Delete Post</button>
-						<button v-if="!post.showCommentBox" @click="(post.showCommentBox = true)">Add Comment</button>
-						<div v-else>
-							<textarea v-model="post.commentText" placeholder="Enter your comment"></textarea>
-							<button @click="addComment(post)">Post Comment</button>
-						</div>
-						<div v-if="post.comments!=null" class="comments">
-							<button v-if="!post.showComments" @click="post.showComments=true">Show Comments</button>
-							<div v-else>
-								<h4 class="comments-heading">Comments:</h4>
-								<div v-for="(comment,comment_index) in post.comments" :key="comment.comment_id" class="comments">
-									<div class="comment">
-										<p>
-											<router-link :to="'/users/' + comment.username">@{{ comment.username }} </router-link>
-											: {{ comment.content }}
-										</p>
-										<button v-if="authToken.slice(7) == comment.user_id" @click="removeComment(post, comment_index)">Delete comment</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+	  <div v-if="loggedIn" class="profile-container">
+		<h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
+		<h1>{{ $route.params.username }}</h1>
+		<div v-if="isItMe">
+		  <router-link to="/settings" class="profile-settings">
+			<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#settings"/></svg>
+			Profile settings
+		  </router-link>
 		</div>
+		<p>This is the profile page of {{ $route.params.username }}</p>
+		<p v-if="message != ''">Error: {{ message }} </p>
+		<div v-if="profile_data">
+		  <div v-if="!isItMe">
+			<button v-if="!profile_data.data.is_following && !profile_data.data.is_banned" @click="follow()" class="btn btn-dark">Follow</button>
+			<button v-if="profile_data.data.is_following" @click="unfollow()" class="btn btn-dark">Unfollow</button>
+			<button v-if="!profile_data.data.is_banned" @click="ban" class="btn btn-dark">Ban</button>
+			<button v-if="profile_data.data.is_banned" @click="unban" class="btn btn-dark">Unban</button>
+		  </div>
+		  <p class="followers-count">Number of followers: {{profile_data.data.followers_count}}</p>
+		  <button v-if="!show_followers" @click="(show_followers = true)" class="btn btn-dark">Show followers</button>
+		  <button v-if="show_followers" @click="(show_followers = false)" class="btn btn-dark">Hide followers</button>
+		  <p v-if="show_followers" class="followers-list">Followers:
+			<label v-for="username in profile_data.data.followers" :key="username">
+			  <router-link :to="'/users/' + username"> @{{ username }} </router-link>
+			</label>
+		  </p>
+		  <div v-if="profile_data.data.posts" class="post-container">
+			<h3 class="photos-heading">Photos:</h3>
+			<div v-for="(post, post_index) in profile_data.data.posts" :key="post.post_id" class="post">
+			  <div class="post-content">
+				<p v-if="post.content != 'undefined'">{{ post.content }}</p>
+				<p>Likes: {{ post.likes_count }}</p>
+				<button v-if="!post.is_liked" @click="likePost(post)" class="btn btn-dark btn-like">Like</button>
+				<button v-if="post.is_liked" @click="unLikePost(post)" class="btn btn-dark btn-like">un-Like</button>
+			  </div>
+			  <img v-if="post.image" :src="`data:image/png;base64,${post.image}`" alt="Post Image" class="post-image">
+			  <button v-if="isItMe" @click="removePost(post_index)" class="btn btn-dark btn-delete">Delete Post</button>
+			  <button v-if="!post.showCommentBox" @click="(post.showCommentBox = true)" class="btn btn-dark">Add Comment</button>
+			  <div v-else>
+				<textarea v-model="post.commentText" placeholder="Enter your comment"></textarea>
+				<button @click="addComment(post)" class="btn btn-dark">Post Comment</button>
+			  </div>
+			  <div v-if="post.comments!=null" class="comments">
+				<button v-if="!post.showComments" @click="post.showComments=true" class="btn btn-dark">Show Comments</button>
+				<div v-else>
+				  <h4 class="comments-heading">Comments:</h4>
+				  <div v-for="(comment,comment_index) in post.comments" :key="comment.comment_id" class="comments">
+					<div class="comment">
+					  <p>
+						<router-link :to="'/users/' + comment.username">@{{ comment.username }} </router-link>
+						: {{ comment.content }}
+					  </p>
+					  <button v-if="authToken.slice(7) == comment.user_id" @click="removeComment(post, comment_index)" class="btn btn-dark">Delete comment</button>
+					</div>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </div>
 	</div>
-</template>
+  </template>
   
-  <style>
-  /* Basic styles for the post container */
-  .post-container {
-	margin: 1rem 0;
+  <style scoped>
+  .profile-container {
+	background-color: #f5f5f5;
 	border: 1px solid #ddd;
-	padding: 1rem;
-	border-radius: 5px;
+   border-radius: 5px;
+	padding: 20px;
+	width: 80%;
+	margin: 0 auto;
   }
   
-  /* Styles for the photos heading */
+  .profile-settings {
+	color: #337ab7;
+	text-decoration: none;
+  }
+  
+  .profile-settings svg {
+	height: 1em;
+	width: 1em;
+	margin-right: 5px;
+  }
+  
+  .alert {
+	background-color: #d4edda;
+	color: #155724;
+	padding: 10px;
+	margin-bottom: 20px;
+  }
+  
+  h1 {
+	margin-top: 0;
+  }
+  
+  p {
+	color: #333;
+  }
+  
+  .btn {
+	display: inline-block;
+	padding: 5px 10px;
+	margin-bottom: 10px;
+	color: #fff;
+	background-color: #337ab7;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+  }
+  
+  .btn-dark {
+	background-color: #333;
+  }
+  
+  .btn-dark:hover {
+	background-color: #555;
+  }
+  
+  .btn-like {
+	margin-right: 10px;
+  }
+  
+  .btn-delete {
+	background-color: red;
+  }
+  .btn-delete:hover {
+	background-color: rgb(251, 94, 94);
+  }
+  
+  .followers-count {
+	margin-top: 20px;
+  }
+  
+  .followers-list {
+	margin-top: 10px;
+  }
+  
+  .post-container {
+	margin-top: 20px;
+  }
+  
   .photos-heading {
-	font-weight: bold;
-	margin-bottom: 0.5rem;
+	margin-top: 0;
   }
   
-  /* Styles for each post */
   .post {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd; /* Add border */
-  padding: 1rem; /* Add padding */
-  border-radius: 5px; /* Add border radius */
-}
-  
-  /* Styles for post image with fixed size and centering */
-  .post-image {
-	width: 150px;
-	height: 150px;
-	object-fit: cover;
-	margin-bottom: 1rem;
-	border: 1px solid #3f8317;
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 10px;
   }
   
-  /* Styles for post content area */
   .post-content {
-	text-align: center;
+	margin-bottom: 10px;
   }
   
-  /* Styles for comments heading */
+  .post-image {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+  
   .comments-heading {
-	font-weight: bold;
-	margin-top: 0.5rem;
+	margin-top: 10px;
   }
   
-  /* Styles for individual comments */
   .comments {
-	margin-bottom: 0.25rem;
+	margin-top: 10px;
   }
-
-  .comment{
-	  border: 1px solid #ddd;
-	  padding: 0.5rem;
-	  border-radius: 5px;
+  
+  .comment {
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 10px;
+  }
+  
+  textarea {
+	width: 100%;
+	height: 80px;
+	resize: none;
+	margin-bottom: 10px;
+  }
+  
+  .router-link-active {
+	color: #337ab7;
   }
   </style>
-  

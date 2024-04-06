@@ -100,32 +100,67 @@ export default {
 </script>
 
 <template>
-	<div>
-		<div>
-			<h1>So... {{ this.authUser }}, you want to upload a picture?</h1>
-            <div class="row" style="margin: 10px;">
-                <textarea class="form-control" id="picture-text-box" placeholder="Enter a description for your picture" v-model="caption"></textarea>
-            </div>
-            <div>
-                <h3 v-if="message!=''">{{ message }}</h3>
-                <input type="file" id="picture" accept=".png,.jpg,image/jpeg" @change="onFileChange"/>
-                <button @click="uploadPicture">Upload Picture</button>
-            </div>  
+    <div class="upload-container" style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 0 auto; max-width: 400px;">
+      <h2 class="alert alert-primary" v-if="message">{{ message }}</h2>
+      <div class="upload-form">
+        <h1>So... {{ this.authUser }}, you want to upload a picture?</h1>
+        <div class="form-group">
+          <label for="picture-text-box" class="form-label">Picture description:</label>
+          <textarea
+            class="form-control"
+            id="picture-text-box"
+            placeholder="Enter a description for your picture"
+            v-model="caption"
+          ></textarea>
         </div>
-        <div v-if="response_post != null" >
-            <h2>Image uploaded:</h2>
-            <p>User: {{ response_post.data.username }}&#10;</p>
-            <p v-if="response_post.data.content">Text: {{ response_post.data.content }}&#10;</p>
-            <p v-if="response_post.data.image!=null"><img v-bind:src="dataURI" alt="Post Image"></p>
+        <div class="form-group">
+          <input type="file" id="picture" accept=".png,.jpg,image/jpeg" @change="onFileChange" />
+          <button type="button" class="btn btn-primary" @click="uploadPicture">Upload Picture</button>
         </div>
-	</div>
-</template>
-
-<style>
-img {
-  max-width: 1000px;
-  max-height: 700px;
-}
-
-</style>
-
+      </div>
+      <div v-if="response_post != null" class="upload-results">
+        <h2>Image uploaded:</h2>
+        <p>User: {{ response_post.data.username }}</p>
+        <p v-if="response_post.data.content">Text: {{ response_post.data.content }}</p>
+        <p v-if="response_post.data.image!=null">
+          <img v-bind:src="dataURI" alt="Post Image" />
+        </p>
+      </div>
+    </div>
+  </template>
+  
+  <style scoped>
+  
+    .upload-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .upload-form h1 {
+      font-size: 1.5rem; /* Adjust heading size */
+    }
+  
+    .form-label {
+      font-weight: bold;
+      margin-bottom: 5px; /* Add spacing after label */
+    }
+  
+    .form-control,
+    .btn-primary {
+      border-radius: 3px;
+      padding: 8px 10px; /* Adjust padding for better fit */
+    }
+  
+    .btn-primary {
+      background-color: #333;
+      color: #fff;
+    }
+  
+    .upload-results {
+      margin-top: 20px;
+      border-top: 1px solid #ddd; /* Add top border */
+      padding-top: 10px; /* Add padding after border */
+    }
+  </style>
+  
