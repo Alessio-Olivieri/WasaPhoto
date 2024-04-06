@@ -40,6 +40,11 @@ func (rt *_router) post_photo(w http.ResponseWriter, r *http.Request, ps httprou
 		if errors.Is(http.ErrMissingFile, err) {
 			message = message + "No photo present \n"
 			empty_picture = true
+			// By uncommentig this you can upload a post with only text
+			ctx.Logger.Error(message + "error while obtaining photo resource " + err.Error())
+			w.WriteHeader(http.StatusBadRequest)
+			return
+			// -----------------------
 		}
 		if !errors.Is(http.ErrMissingFile, err) {
 			ctx.Logger.Error(message + "error while obtaining photo resource " + err.Error())
