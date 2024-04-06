@@ -11,7 +11,7 @@ func (db *appdbimpl) ListUsers() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = rows.Close() }()
+	defer rows.Close()
 
 	var ret []string
 	var username string

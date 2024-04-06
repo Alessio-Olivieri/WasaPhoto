@@ -22,7 +22,7 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Strea
 		return stream, ErrEmptyStream
 	}
 
-	stream.TotalPages = int(totalPosts / 10)
+	stream.TotalPages = totalPosts / 10
 	if totalPosts < page*10 {
 		return stream, ErrPageNumberOutOfBound
 	}
@@ -42,10 +42,10 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Strea
 		ORDER BY Photos.date DESC
 		LIMIT 10 OFFSET ?
 		`, request_user_id, request_user_id, page*10)
-	if errors.Is(err, sql.ErrNoRows) {
-		return stream, ErrPageNumberOutOfBound
-	}
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return stream, ErrPageNumberOutOfBound
+		}
 		return stream, err
 	}
 

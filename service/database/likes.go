@@ -23,8 +23,11 @@ func (db *appdbimpl) IsLiked(photo_id uint64, user_id uint64) (bool, error) {
 func (db *appdbimpl) PutLike(photo_id uint64, user_id uint64) error {
 	var user_id_photo uint64
 	err := db.c.QueryRow(`SELECT user_id FROM Photos WHERE photo_id = ?`, photo_id).Scan(&user_id_photo)
-	if errors.Is(err, sql.ErrNoRows) {
-		return ErrPhotoNotExists
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrPhotoNotExists
+		}
+		return err
 	}
 
 	// check if user is banned
@@ -55,8 +58,11 @@ func (db *appdbimpl) PutLike(photo_id uint64, user_id uint64) error {
 func (db *appdbimpl) DeleteLike(photo_id uint64, user_id uint64) error {
 	var user_id_photo uint64
 	err := db.c.QueryRow(`SELECT user_id FROM Photos WHERE photo_id = ?`, photo_id).Scan(&user_id_photo)
-	if errors.Is(err, sql.ErrNoRows) {
-		return ErrPhotoNotExists
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrPhotoNotExists
+		}
+		return err
 	}
 
 	// check if user is banned

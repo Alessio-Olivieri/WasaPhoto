@@ -141,11 +141,9 @@ func New(db *sql.DB) (AppDatabase, error) {
 				return nil, errors.New("error building table " + tableName)
 			}
 		} else {
-			// message = message + "table " + tableName + " exists\n"
+			return nil, err
 		}
 	}
-	// log.Println(message + "[DATABASE STRUCTURE CREATED]")
-
 	return &appdbimpl{
 		c: db,
 	}, nil

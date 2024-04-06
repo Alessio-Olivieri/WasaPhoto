@@ -16,10 +16,10 @@ func (db *appdbimpl) PostComment(photo_id uint64, user_id uint64, text string) (
 
 	var user_id_photo uint64
 	err := db.c.QueryRow(`SELECT user_id FROM Photos WHERE photo_id = ?`, photo_id).Scan(&user_id_photo)
-	if errors.Is(err, sql.ErrNoRows) {
-		return comment, ErrPhotoNotExists
-	}
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return comment, ErrPhotoNotExists
+		}
 		return comment, err
 	}
 
@@ -36,7 +36,10 @@ func (db *appdbimpl) PostComment(photo_id uint64, user_id uint64, text string) (
 		return comment, err
 	}
 
-	username, _ := db.Get_username_from_userId(user_id)
+	username, err := db.Get_username_from_userId(user_id)
+	if err != nil {
+		return comment, err
+	}
 	comment_id, err := result.LastInsertId()
 	if err != nil {
 		return comment, err
@@ -54,18 +57,18 @@ func (db *appdbimpl) DeleteComment(comment_id uint64, user_id uint64) error {
 
 	// check if comment exists
 	err := db.c.QueryRow("SELECT true FROM Comments WHERE comment_id = ?", comment_id).Scan(&exists)
-	if errors.Is(err, sql.ErrNoRows) {
-		return ErrCommentNotExists
-	}
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrCommentNotExists
+		}
 		return err
 	}
 
 	err = db.c.QueryRow("SELECT true FROM Comments WHERE user_id = ? and comment_id = ?", user_id, comment_id).Scan(&authorized)
-	if errors.Is(err, sql.ErrNoRows) {
-		return ErrForbidden
-	}
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrForbidden
+		}
 		return err
 	}
 

@@ -25,7 +25,6 @@ func (db *appdbimpl) IsFollowing(follower_id uint64, followed_id uint64) (bool, 
 		return false, err
 	}
 	defer rows.Close()
-
 	var result bool
 
 	rows.Next()
