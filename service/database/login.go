@@ -28,6 +28,7 @@ func (db *appdbimpl) Login_db(username string) (uint64, error) {
 	if err != nil {
 		return 18446744073709551615, err
 	}
+	defer rows.Close()
 
 	if rows.Next() {
 		err := rows.Scan(&user_id)
