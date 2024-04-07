@@ -86,10 +86,12 @@ paths:
       tags: ["Stream"]
       operationId: getMyStream 
       summary: ask for the Stream of the user, specified by user_id which is inferred by auth token 
+      description: |
+        return the photos of all the users followed by the current user in reverse chronological order
       responses:
         '200':
           description: |
-            return the photos of all the users followed by the current user in reverse chronological order
+            return the posts
           content:
             application/json:
               schema:
@@ -111,6 +113,8 @@ paths:
         - bearerAuth: []
       tags: ['profile']
       summary: request the profile of the user, specified by username
+      description: |
+        return the photos of the user in reverse chronological order
       operationId: getUserProfile 
       responses:
         '200':
@@ -140,7 +144,7 @@ paths:
       description: |-
         Get lists of possible users
         that have username similar 
-        to the one searched.
+        to the one in the query.
       summary: search user
       tags: ['user']
       responses:
@@ -149,6 +153,8 @@ paths:
           content:
             application/json:
               schema:
+                description: 
+                  List of the users found
                 type: object
                 properties:
                   users:
@@ -169,6 +175,8 @@ paths:
         - bearerAuth: []
       tags: ["photo"]
       summary: uploads a Picture for the user
+      description: |
+        The user uploads a photo with a description
       operationId: uploadPhoto
       requestBody:
         description: the photo to be uploaded
@@ -200,6 +208,8 @@ paths:
       tags: ['photo']
       operationId: deletePhoto
       summary: deletes the photo
+      description: 
+        deletes the photo specified by post_id
       responses:
         "204":
           description: photo deleted or photo already didn't exist
@@ -224,6 +234,8 @@ paths:
       tags: ['Comment']
       operationId: commentPhoto
       summary: uploads a Comment on the Picture
+      description: |
+        The user uploads a comment on the photo
       requestBody:
         description: the photo to be uploaded
         content:
@@ -306,7 +318,6 @@ paths:
       tags: ['like']
       operationId: unlikePhoto
       summary: unlikes the photo
-      
       description: remove the like of user from the photo
       responses:
         '204':
@@ -332,7 +343,6 @@ paths:
       tags: ['follow']
       operationId: followUser
       summary: add a follower
-      
       description: |
         add a user to the followers list of the authenticated user
         return 200 if the user is already in the list
@@ -354,7 +364,6 @@ paths:
       tags: ['follow']
       operationId: unfollowUser
       summary: removes a follower
-      
       description: |
         remove a user from the followers list of the authenticated user
       responses:
@@ -422,27 +431,11 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Object_id'
-    
-    user_id: 
-      name: user_id
-      in: path
-      description: The username of the user
-      required: true
-      schema:
-        $ref: '#/components/schemas/Object_id'
         
     post_id:
       name: post_id
       in: path
       description: identificative of the photo
-      required: true
-      schema:
-        $ref: '#/components/schemas/Object_id'
-        
-    like_id:
-      name: like_id
-      in: path
-      description: identificative of the like (the username of the person who put like)
       required: true
       schema:
         $ref: '#/components/schemas/Object_id'
@@ -512,7 +505,6 @@ components:
 
         
   schemas:
-
     Userlist:
       description: a list of usernames
       type: array
@@ -535,10 +527,16 @@ components:
         followers_count:
           $ref: '#/components/schemas/Numerical'
         is_banned:
+          description: |
+            True if the user of the profile is banned by the current user
           type: boolean
         is_following:
+          description: |
+            True if the user of the profile is followed by the current user
           type: boolean
         posts:
+          description: |
+            List of the posts of the user
           type: array
           items:
             $ref: '#/components/schemas/Post'
@@ -626,12 +624,16 @@ components:
         likes:
           $ref: "#/components/schemas/Likes"
         is_liked:
+          description: |
+            True if the current user liked the post
           type: boolean
         comments:
           type: array
           description: List of comments on the post
           items:
             $ref: '#/components/schemas/Comment'  
+          minItems: 0
+          maxItems: 999999999
         Date:
           $ref: "#/components/schemas/Date"
         Picture:
