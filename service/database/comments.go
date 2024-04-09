@@ -82,7 +82,7 @@ func (db *appdbimpl) DeleteComment(comment_id uint64, user_id uint64) error {
 // get the comments of a picture
 func (db *appdbimpl) GetComments(photo_id uint64) ([]schemas.Comment, error) {
 	var comments []schemas.Comment
-	rows, err := db.c.Query(`SELECT comment_id, user_id, text, date FROM Comments WHERE photo_id = ?`, photo_id)
+	rows, err := db.c.Query(`SELECT photo_id, comment_id, user_id, text, date FROM Comments WHERE photo_id = ?`, photo_id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return comments, ErrPhotoNotExists
@@ -93,7 +93,7 @@ func (db *appdbimpl) GetComments(photo_id uint64) ([]schemas.Comment, error) {
 
 	for rows.Next() {
 		var comment schemas.Comment
-		err = rows.Scan(&comment.CommentId, &comment.UserId, &comment.Text, &comment.Date)
+		err = rows.Scan(&comment.PostId, &comment.CommentId, &comment.UserId, &comment.Text, &comment.Date)
 		if err != nil {
 			return nil, err
 		}

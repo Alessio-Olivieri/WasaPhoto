@@ -31,6 +31,12 @@ func (rt *_router) put_follower(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	if profileId == ctx.UserId {
+		w.WriteHeader(http.StatusForbidden)
+		ctx.Logger.Error(message + "you can't follow yourself")
+		return
+	}
+
 	// check if you banned the user
 	banned, err := rt.db.IsBanned(ctx.UserId, profileId)
 	if err != nil {

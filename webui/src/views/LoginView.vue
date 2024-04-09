@@ -18,7 +18,11 @@ export default {
             }
             try {
                 console.log("Logging in with username: " + this.username);
-                const response = await this.$axios.post('/login', { username: this.username });
+                const response = await this.$axios.post('/login', {}, {
+                    params: {
+                        username: this.username,
+                    }
+                },);
                 console.log("Response: ", response.data);
                 this.userId = response.data.userId; 
                 this.saveToSessionStorage();

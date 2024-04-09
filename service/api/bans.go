@@ -29,6 +29,12 @@ func (rt *_router) put_ban(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 	message = message + profile_username + "\n"
 
+	if profileId == ctx.UserId {
+		w.WriteHeader(http.StatusForbidden)
+		ctx.Logger.Error(message + "you can't ban yourself")
+		return
+	}
+
 	// putting ban
 	err = rt.db.PutBan(ctx.UserId, profileId)
 	if errors.Is(err, database.ErrBanAlreadyExists) {

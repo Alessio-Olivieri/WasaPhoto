@@ -9,11 +9,9 @@ type Username struct {
 }
 
 type GetUserProfile struct {
-	Username        string   `json:"username"`
-	UserId          uint64   `json:"user_id"`
 	Followers       []string `json:"followers"`
 	Followers_count int      `json:"followers_count"`
-	Posts           []Post   `json:"posts"`
 	IsBanned        bool     `json:"is_banned"`
 	IsFollowing     bool     `json:"is_following"`
+	Posts           []Post   `json:"posts"`
 }

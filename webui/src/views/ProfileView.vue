@@ -206,7 +206,7 @@ export default {
 			this.loading = true
 			try{
 				console.log("liking post...")
-				await this.$axios.put(`/photos/${post.post_id}/likes/${sessionStorage.getItem("username")}`, {}, {
+				await this.$axios.put(`/photos/${post.post_id}/likes/me`, {}, {
 					headers: {
 							'Authorization': this.authToken,
 						},
@@ -246,7 +246,7 @@ export default {
 			this.loading = true
 			try{
 				console.log("unliking post...")
-				await this.$axios.delete(`/photos/${post.post_id}/likes/${sessionStorage.getItem("username")}`, {
+				await this.$axios.delete(`/photos/${post.post_id}/likes/me`, {
 					headers: {
 						'Authorization': this.authToken
 					}

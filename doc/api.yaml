@@ -4,6 +4,9 @@ info:
   description: |
     API for the project the course of WASA
   version: 3.0.0
+servers:
+  - url: "http://localhost:3000"
+    description: localhost server, for development purposses.
 
 tags: 
   - name: login
@@ -56,10 +59,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Username'
+              type: object
+              properties:
+                username:
+                  $ref: '#/components/schemas/Username'
         required: true
       responses:
-        '200':
+        '204':
           description: Username changed successfully
         '400':
           $ref: "#/components/responses/BadRequestError"
@@ -241,7 +247,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Text'
+              type: object
+              properties:
+                content:
+                  $ref: '#/components/schemas/Text'
         required: true
       responses:
         '201':
@@ -288,10 +297,9 @@ paths:
         "500":
           $ref: "#/components/responses/ServerError"
 
-  /photos/{post_id}/likes/{username}:
+  /photos/{post_id}/likes/me:
     parameters:
       - $ref: '#/components/parameters/post_id'
-      - $ref: '#/components/parameters/username_path'
     put:
       security:
         - bearerAuth: []
@@ -334,7 +342,7 @@ paths:
           $ref: "#/components/responses/ServerError"
 
           
-  /followed/{username}/:
+  /followed/{username}:
     parameters:
       - $ref: '#/components/parameters/username_path'
     put:
@@ -380,7 +388,7 @@ paths:
         "500":
           $ref: "#/components/responses/ServerError"
   
-  /banned/{username}/:
+  /banned/{username}:
     parameters:
       - $ref: '#/components/parameters/username_path' 
     put:
@@ -443,7 +451,7 @@ components:
     username_path:
       name: username
       in: path
-      description: the username of the user
+      description: the username of the user to interact with
       required: true
       schema:
         $ref: '#/components/schemas/Username'
@@ -518,10 +526,6 @@ components:
       description: everything from the user
       type: object
       properties:
-        username:
-          $ref: '#/components/schemas/Username'
-        user_id:
-          $ref: '#/components/schemas/Object_id'
         followers:
           $ref: '#/components/schemas/Userlist'
         followers_count:
@@ -563,29 +567,13 @@ components:
       
     Post_photo:
       description: 
-        Schema for handling the photo upload
+        Schema for handling the photo upload of the logged in user
       type: object
       properties:
-        photo:
+        picture:
           $ref: '#/components/schemas/Picture'
-        content:
+        caption:
           $ref: '#/components/schemas/Text'
-        user_id:
-          $ref: '#/components/schemas/Object_id'
-
-    Likes: 
-      description: List of unique identifiers of the users who liked a photo
-      type: array
-      items:
-        type: object
-        properties: 
-          user_id:
-            $ref: '#/components/schemas/Object_id'
-          photo_id:
-            $ref: '#/components/schemas/Object_id'
-      minItems: 0
-      maxItems: 18446744073709551615
-      uniqueItems: true
 
     Stream:
       description: List of the photos of the users followed by the current user in descending order of Date
@@ -622,7 +610,7 @@ components:
         likes_count:
           $ref: "#/components/schemas/Numerical"
         likes:
-          $ref: "#/components/schemas/Likes"
+          $ref: "#/components/schemas/Userlist"
         is_liked:
           description: |
             True if the current user liked the post
@@ -646,7 +634,6 @@ components:
       description: |
         the username of the user
       type: string
-      example: pippo
       pattern: '^[a-zA-Z0-9._-]+$'
       minLength: 3
       maxLength: 25
@@ -661,7 +648,6 @@ components:
       description: |
         A general schema for a long Text
       type: string
-      example: "Che bella foto!!!"
       pattern: '^[a-zA-Z0-9.,;:#"!?=)(/(_-]+$'
       maxLength: 1000
       minLength: 1

@@ -33,8 +33,8 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/banned/:username", rt.wrap(rt.delete_ban, true))
 
 	// like
-	rt.router.PUT("/photos/:photo_id/likes/:username", rt.wrap(rt.put_like, true))
-	rt.router.DELETE("/photos/:photo_id/likes/:username", rt.wrap(rt.delete_like, true))
+	rt.router.PUT("/photos/:photo_id/likes/me", rt.wrap(rt.put_like, true))
+	rt.router.DELETE("/photos/:photo_id/likes/me", rt.wrap(rt.delete_like, true))
 	// rt.router.Get("/photos/:photo_id/likesAmount", rt.wrap(rt.get_likes, true))
 
 	// comments
