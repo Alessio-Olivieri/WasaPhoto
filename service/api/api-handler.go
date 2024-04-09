@@ -15,6 +15,7 @@ func (rt *_router) Handler() http.Handler {
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
+	rt.router.PUT("/settings/username", rt.wrap(rt.changeUsername, true))
 
 	// stream
 	rt.router.GET("/stream", rt.wrap(rt.get_stream, true))
@@ -22,7 +23,6 @@ func (rt *_router) Handler() http.Handler {
 	// user
 	rt.router.GET("/users/", rt.wrap(rt.search_users, true))
 	rt.router.GET("/users/:username", rt.wrap(rt.GetUserProfile, true))
-	rt.router.PUT("/settings/username", rt.wrap(rt.changeUsername, true))
 
 	// follower
 	rt.router.PUT("/followed/:username", rt.wrap(rt.put_follower, true))
