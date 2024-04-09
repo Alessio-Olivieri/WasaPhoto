@@ -62,7 +62,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 				} else {
 					console.error("error: ", error)
@@ -99,7 +99,7 @@ export default {
 					switch (statusCode) {
 						case 400:
 							console.error("Bad request: post_id not valid")
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 							break
 						case 401:
 							console.error("Auth header missing")
@@ -115,7 +115,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.profile_data.data.posts.splice(i, 1)
@@ -158,7 +158,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -196,7 +196,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -235,7 +235,7 @@ export default {
 								break
 							default:
 								console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-								this.message = "Error handling ban request"
+								this.message = "Error handling  request"
 						}
 				}
 
@@ -275,7 +275,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -302,7 +302,7 @@ export default {
 					switch (statusCode) {
 						case 400:
 							console.error("Bad request: profile username not present or bad format or you banned the user")
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 							break
 						case
 							401:
@@ -315,7 +315,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -342,7 +342,7 @@ export default {
 					switch (statusCode) {
 						case 400:
 							console.error("Bad request: profile username not present or user doesn't exists")
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 							break
 						case 401:
 							console.error("Auth header missing")
@@ -358,7 +358,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -380,7 +380,7 @@ export default {
                     switch (statusCode) {
 						case 400:
 							console.error("Bad request: profile username not present or user doesn't exists")
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 							break
 						case 401:
 							console.error("Auth header missing")
@@ -388,7 +388,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -422,7 +422,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 				} else {
 					console.error("error: ", error)

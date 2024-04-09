@@ -664,6 +664,7 @@ components:
       description: Base64 encoded image data
       type: string
       format: byte
+      pattern: "^[01]+$"
       minLength: 0
       maxLength: 9999999999999999999
 

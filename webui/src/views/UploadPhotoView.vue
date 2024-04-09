@@ -76,7 +76,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 				} else {
 					console.error("error: ", error)
@@ -114,7 +114,7 @@ export default {
           ></textarea>
         </div>
         <div class="form-group">
-          <input type="file" id="picture" accept=".png,.jpg,image/jpeg" @change="onFileChange" />
+          <input type="file" id="picture" accept=".png,.jpg,image/jpeg" @change="onFileChange" required/>
           <button type="button" class="btn btn-primary" @click="uploadPicture">Upload Picture</button>
         </div>
       </div>

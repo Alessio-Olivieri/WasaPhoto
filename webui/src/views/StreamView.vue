@@ -54,7 +54,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 				} else {
 					console.error("error: ", error)
@@ -99,7 +99,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -137,7 +137,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
@@ -176,7 +176,7 @@ export default {
 								break
 							default:
 								console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-								this.message = "Error handling ban request"
+								this.message = "Error handling  request"
 						}
 				}
 
@@ -216,7 +216,7 @@ export default {
 							break
 						default:
 							console.error(`Unhandled HTTP Error (${statusCode}):`, error.response.data);
-							this.message = "Error handling ban request"
+							this.message = "Error handling  request"
 					}
 			}
 			this.loading = false
