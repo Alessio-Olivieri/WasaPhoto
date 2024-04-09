@@ -25,21 +25,23 @@ func (rt *_router) post_photo(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	// get caption from request
+	// By removing the following comments you can upload a post without photo
+	// ------------
 	caption := r.FormValue("caption")
 	emptyComment := regexp.MustCompile(`^\s*(?:#.*|\bundefined\b|\s*)$`)
-	empty_caption := false
+	// empty_caption := false
 	if emptyComment.MatchString(caption) {
 		message = message + "empty caption \n"
-		empty_caption = true
+		// empty_caption = true
 	}
 
 	// get photo from request
 	file, _, err := r.FormFile("picture")
-	empty_picture := false
+	// empty_picture := false
 	if err != nil {
 		if errors.Is(http.ErrMissingFile, err) {
 			message = message + "No photo present \n"
-			empty_picture = true
+			// empty_picture = true
 			// By uncommentig this you can upload a post with only text
 			ctx.Logger.Error(message + "error while obtaining photo resource " + err.Error())
 			w.WriteHeader(http.StatusBadRequest)
@@ -55,11 +57,12 @@ func (rt *_router) post_photo(w http.ResponseWriter, r *http.Request, ps httprou
 		defer file.Close()
 	}
 
-	if empty_caption && empty_picture {
-		ctx.Logger.Error(message + "No photo and caption present")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	// if empty_caption && empty_picture {
+	// 	ctx.Logger.Error(message + "No photo and caption present")
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	return
+	// }
+	// ------------------
 
 	response, err := rt.db.Make_photo(ctx.UserId, caption, file)
 	if err != nil {
