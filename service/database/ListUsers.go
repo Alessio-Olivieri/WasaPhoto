@@ -1,6 +1,8 @@
 package database
 
 import (
+	"database/sql"
+	"errors"
 	"log"
 )
 
@@ -8,6 +10,9 @@ import (
 func (db *appdbimpl) ListUsers() ([]string, error) {
 	log.Println("DATABASE:  listing users")
 	rows, err := db.c.Query(`SELECT username FROM Users;`)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}

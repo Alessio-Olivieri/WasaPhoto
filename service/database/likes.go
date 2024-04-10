@@ -8,25 +8,25 @@ import (
 // retruns 1 if banned, 0 if not banned, -1 if error
 func (db *appdbimpl) IsLiked(photo_id uint64, user_id uint64) (bool, error) {
 	var exists int8
-	err := db.c.QueryRow(`SELECT EXISTS(SELECT 1 FROM Likes
-		WHERE photo_id = ? AND user_id = ?)`,
+	err := db.c.QueryRow(`SELECT 1 FROM Likes
+		WHERE photo_id = ? AND user_id = ?`,
 		photo_id, user_id).Scan(&exists)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
 	if err != nil {
 		return false, err
 	}
-	if exists == 1 {
-		return true, nil
-	}
-	return false, nil
+	return true, nil
 }
 
 func (db *appdbimpl) PutLike(photo_id uint64, user_id uint64) error {
 	var user_id_photo uint64
 	err := db.c.QueryRow(`SELECT user_id FROM Photos WHERE photo_id = ?`, photo_id).Scan(&user_id_photo)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrPhotoNotExists
+	}
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrPhotoNotExists
-		}
 		return err
 	}
 
@@ -58,10 +58,10 @@ func (db *appdbimpl) PutLike(photo_id uint64, user_id uint64) error {
 func (db *appdbimpl) DeleteLike(photo_id uint64, user_id uint64) error {
 	var user_id_photo uint64
 	err := db.c.QueryRow(`SELECT user_id FROM Photos WHERE photo_id = ?`, photo_id).Scan(&user_id_photo)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrPhotoNotExists
+	}
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrPhotoNotExists
-		}
 		return err
 	}
 
@@ -94,6 +94,9 @@ func (db *appdbimpl) GetLikeAmount(photo_id uint64) (int, error) {
 	var like_count int
 	err := db.c.QueryRow(`SELECT COUNT(*) FROM Likes
 		WHERE photo_id = ?`, photo_id).Scan(&like_count)
+	if errors.Is(err, sql.ErrNoRows) {
+		return like_count, nil
+	}
 	if err != nil {
 		return 0, err
 	}
@@ -105,6 +108,9 @@ func (db *appdbimpl) GetLikes(photo_id uint64) ([]string, error) {
 	var likes []string
 	rows, err := db.c.Query(`SELECT user_id FROM Likes
 		WHERE photo_id = ?`, photo_id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return likes, nil
+	}
 	if err != nil {
 		return likes, err
 	}

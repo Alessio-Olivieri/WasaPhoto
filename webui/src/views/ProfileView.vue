@@ -53,8 +53,9 @@ export default {
 							this.message = "Unauthorized"
 							break
 						case 403:
-							console.error("Forbidden: user is banned")
-							this.message = "User is banned"
+							console.log("diocanee")
+							console.error("Forbidden: user has banned you")
+							this.message = "User has banned you"
 							break
 						case 404:
 							console.error("user with requested username not exists")

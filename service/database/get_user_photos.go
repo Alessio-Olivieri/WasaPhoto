@@ -1,6 +1,9 @@
 package database
 
 import (
+	"database/sql"
+	"errors"
+
 	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
 )
 
@@ -14,6 +17,9 @@ func (db *appdbimpl) Get_user_photos(user_id_request uint64, user_id_profile uin
 		Photos.date,
 		(SELECT EXISTS(SELECT TRUE FROM Likes WHERE Photos.photo_id = photo_id AND user_id = ?)) AS isLiked 
 		FROM Photos WHERE user_id = ?;`, user_id_request, user_id_request, user_id_profile)
+	if errors.Is(err, sql.ErrNoRows) {
+		return postList, ErrUserNotExists
+	}
 	if err != nil {
 		return postList, err
 	}

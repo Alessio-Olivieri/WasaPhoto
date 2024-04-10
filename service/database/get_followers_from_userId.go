@@ -1,12 +1,17 @@
 package database
 
 import (
+	"database/sql"
+	"errors"
 	"strconv"
 )
 
 func (db *appdbimpl) Get_followers_from_userId(userId uint64) ([]string, error) {
 	var followers []string
 	rows, err := db.c.Query("SELECT follower_id FROM Followers WHERE followed_id = ?", userId)
+	if errors.Is(err, sql.ErrNoRows) {
+		return followers, nil
+	}
 	if err != nil {
 		return followers, err
 	}

@@ -1,5 +1,10 @@
 package database
 
+import (
+	"database/sql"
+	"errors"
+)
+
 func (db *appdbimpl) PutFollower(follower_id uint64, followed_id uint64) error {
 	// check if follow exists
 	exists, err := db.IsFollowing(follower_id, followed_id)
@@ -18,26 +23,24 @@ func (db *appdbimpl) PutFollower(follower_id uint64, followed_id uint64) error {
 }
 
 func (db *appdbimpl) IsFollowing(follower_id uint64, followed_id uint64) (bool, error) {
-	rows, err := db.c.Query(`SELECT EXISTS(SELECT 1 FROM Followers
-		WHERE follower_id = ? AND followed_id = ?)`,
-		follower_id, followed_id)
+	var exists bool
+	err := db.c.QueryRow(`SELECT 1 FROM Followers
+		WHERE follower_id = ? AND followed_id = ?`,
+		follower_id, followed_id).Scan(&exists)
+	if errors.Is(sql.ErrNoRows, err) {
+		return false, nil
+	}
 	if err != nil {
 		return false, err
 	}
-	defer rows.Close()
-	var result bool
-
-	rows.Next()
-	err = rows.Scan(&result)
-	if err != nil {
-		return false, err
-	}
-
-	return result, nil
+	return true, nil
 }
 
 func (db *appdbimpl) GetFollowersAmount(followed_id uint64) (int, error) {
 	rows, err := db.c.Query(`SELECT COUNT(*) FROM Followers WHERE followed_id = ?`, followed_id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return 0, nil
+	}
 	if err != nil {
 		return 0, err
 	}

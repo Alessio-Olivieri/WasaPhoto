@@ -1,6 +1,8 @@
 package database
 
 import (
+	"database/sql"
+	"errors"
 	"io"
 	"mime/multipart"
 	"time"
@@ -39,9 +41,12 @@ func (db *appdbimpl) Make_photo(user_id uint64, caption string, picture multipar
 
 func (db *appdbimpl) Exists_photo(photo_id uint64) (bool, error) {
 	var exists bool
-	err := db.c.QueryRow("SELECT EXISTS(SELECT 1 FROM Photos WHERE photo_id = ?)", photo_id).Scan(&exists)
+	err := db.c.QueryRow("SELECT 1 FROM Photos WHERE photo_id = ?", photo_id).Scan(&exists)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
 	if err != nil {
 		return exists, err
 	}
-	return exists, err
+	return true, nil
 }

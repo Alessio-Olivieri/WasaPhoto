@@ -1,18 +1,23 @@
 package database
 
+import (
+	"database/sql"
+	"errors"
+)
+
 // retruns 1 if banned, 0 if not banned, -1 if error
 func (db *appdbimpl) IsBanned(banner_id uint64, banned_id uint64) (bool, error) {
 	var exists int8
-	err := db.c.QueryRow(`SELECT EXISTS(SELECT 1 FROM Bans
-		WHERE banner_id = ? AND banned_id = ?)`,
+	err := db.c.QueryRow(`SELECT 1 FROM Bans
+		WHERE banner_id = ? AND banned_id = ?`,
 		banner_id, banned_id).Scan(&exists)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
 	if err != nil {
 		return false, err
 	}
-	if exists == 1 {
-		return true, nil
-	}
-	return false, nil
+	return true, nil
 }
 
 // inserts a new ban in the database if it does not already exist

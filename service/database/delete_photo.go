@@ -12,18 +12,18 @@ func (db *appdbimpl) DeletePost(post_id uint64, user_id uint64) error {
 
 	// check if photo exists
 	err := db.c.QueryRow("SELECT true FROM Photos WHERE photo_id = ?", post_id).Scan(&exists)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrPhotoNotExists
+	}
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrPhotoNotExists
-		}
 		return err
 	}
 
 	err = db.c.QueryRow("SELECT true FROM Photos WHERE user_id = ? and photo_id = ?", user_id, post_id).Scan(&authorized)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrForbidden
+	}
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrForbidden
-		}
 		return err
 	}
 

@@ -19,6 +19,9 @@ func (db *appdbimpl) Get_userId_from_username(username string) (uint64, error) {
 
 	var user_id_s string
 	err = db.c.QueryRow("SELECT user_id FROM Users WHERE username = ?", username).Scan(&user_id_s)
+	if errors.Is(err, sql.ErrNoRows) {
+		return 18446744073709551615, ErrUserNotExists
+	}
 	if err != nil {
 		return 18446744073709551615, err
 	}
@@ -42,6 +45,9 @@ func (db *appdbimpl) Get_username_from_userId(userId uint64) (string, error) {
 
 	var username string
 	err = db.c.QueryRow("SELECT username FROM Users WHERE user_id = ?", userId).Scan(&username)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", ErrUserNotExists
+	}
 	if err != nil {
 		return "", err
 	}

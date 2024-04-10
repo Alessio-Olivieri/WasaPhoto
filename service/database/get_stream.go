@@ -15,6 +15,9 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Strea
 		photos INNER JOIN users ON users.user_id = photos.user_id
 		WHERE 
 		photos.user_id IN (SELECT followed_id FROM Followers WHERE follower_id = ?)`, request_user_id).Scan(&totalPosts)
+	if errors.Is(err, sql.ErrNoRows) {
+		return stream, ErrEmptyStream
+	}
 	if err != nil {
 		return stream, err
 	}
@@ -43,10 +46,10 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Strea
 		ORDER BY Photos.date DESC
 		LIMIT 10 OFFSET 0
 		`, request_user_id, request_user_id, request_user_id, page*10)
+	if errors.Is(err, sql.ErrNoRows) {
+		return stream, ErrPageNumberOutOfBound
+	}
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return stream, ErrPageNumberOutOfBound
-		}
 		return stream, err
 	}
 	defer rows.Close()
