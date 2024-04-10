@@ -52,7 +52,7 @@ type AppDatabase interface {
 	// Get the list of all users that match the prompt
 	GetSearchUser(prompt string, requestingUser uint64) ([]string, error)
 	// if user exists return its ID, otherwise create a new user and return its ID
-	Login_db(username string) (uint64, error)
+	Login_db(username string) (uint64, bool, error)
 	// if user exists return true, otherwise return false
 	Exists_user(identifier interface{}) (bool, error)
 	// update the username of the user with the specified id

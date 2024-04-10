@@ -16,7 +16,7 @@ func (rt *_router) login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	username := r.URL.Query().Get("username")
 
 	// Check if the user exists in the database, if it does not exist, create it
-	userID, err := rt.db.Login_db(username)
+	userID, created, err := rt.db.Login_db(username)
 	if err != nil {
 		rt.baseLogger.WithError(err).Error(message + "error checking if user exists")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -34,6 +34,11 @@ func (rt *_router) login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		ctx.Logger.WithError(err).Error(message + "error parsing response")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+	if created {
+		w.WriteHeader(http.StatusCreated)
+	} else {
+		w.WriteHeader(http.StatusOK)
 	}
 
 	ctx.Logger.Info(message+"sent UserID ", response["userId"], "to the client")

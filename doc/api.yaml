@@ -34,7 +34,13 @@ paths:
         If the user exists, the user identifier is returned.
       responses:
         '200':
-          description: User log-in action successful, return the id of the user
+            description: User log-in action successful, return the id of the user
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Object_id'
+        '201':
+          description: User log-in action successful, user created, return the id of the user
           content:
             application/json:
               schema:
@@ -59,6 +65,7 @@ paths:
         content:
           application/json:
             schema:
+              description: the new username
               type: object
               properties:
                 username:
@@ -243,10 +250,10 @@ paths:
       description: |
         The user uploads a comment on the photo
       requestBody:
-        description: the photo to be uploaded
         content:
           application/json:
             schema:
+              description: the comment
               type: object
               properties:
                 content:
