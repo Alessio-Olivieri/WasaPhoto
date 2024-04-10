@@ -26,6 +26,9 @@ func (db *appdbimpl) ListUsers() ([]string, error) {
 		if err := rows.Scan(&username); err != nil {
 			return nil, err
 		}
+		if rows.Err() != nil {
+			return nil, rows.Err()
+		}
 		ret = append(ret, username)
 	}
 	log.Println("DATABASE: returning list of users, length:", len(ret))

@@ -32,6 +32,9 @@ func (db *appdbimpl) GetSearchUser(prompt string, requestingUser uint64) ([]stri
 		if err != nil {
 			return nil, err
 		}
+		if rows.Err() != nil {
+			return nil, rows.Err()
+		}
 		result = append(result, username)
 	}
 	return result, nil

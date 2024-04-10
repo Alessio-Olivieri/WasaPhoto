@@ -15,9 +15,6 @@ func (db *appdbimpl) Get_stream(request_user_id uint64, page int) (schemas.Strea
 		photos INNER JOIN users ON users.user_id = photos.user_id
 		WHERE 
 		photos.user_id IN (SELECT followed_id FROM Followers WHERE follower_id = ?)`, request_user_id).Scan(&totalPosts)
-	if errors.Is(err, sql.ErrNoRows) {
-		return stream, ErrEmptyStream
-	}
 	if err != nil {
 		return stream, err
 	}

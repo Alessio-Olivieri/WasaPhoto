@@ -97,6 +97,9 @@ func (db *appdbimpl) GetComments(photo_id uint64) ([]schemas.Comment, error) {
 		if err != nil {
 			return nil, err
 		}
+		if rows.Err() != nil {
+			return nil, rows.Err()
+		}
 
 		comment.Username, err = db.Get_username_from_userId(comment.UserId)
 		if err != nil {

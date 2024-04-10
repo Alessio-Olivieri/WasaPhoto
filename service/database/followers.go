@@ -24,9 +24,7 @@ func (db *appdbimpl) PutFollower(follower_id uint64, followed_id uint64) error {
 
 func (db *appdbimpl) IsFollowing(follower_id uint64, followed_id uint64) (bool, error) {
 	var exists bool
-	err := db.c.QueryRow(`SELECT 1 FROM Followers
-		WHERE follower_id = ? AND followed_id = ?`,
-		follower_id, followed_id).Scan(&exists)
+	err := db.c.QueryRow(`SELECT 1 FROM Followers WHERE follower_id = ? AND followed_id = ?`, follower_id, followed_id).Scan(&exists)
 	if errors.Is(sql.ErrNoRows, err) {
 		return false, nil
 	}
@@ -37,19 +35,8 @@ func (db *appdbimpl) IsFollowing(follower_id uint64, followed_id uint64) (bool, 
 }
 
 func (db *appdbimpl) GetFollowersAmount(followed_id uint64) (int, error) {
-	rows, err := db.c.Query(`SELECT COUNT(*) FROM Followers WHERE followed_id = ?`, followed_id)
-	if errors.Is(err, sql.ErrNoRows) {
-		return 0, nil
-	}
-	if err != nil {
-		return 0, err
-	}
-	defer rows.Close()
-
 	var result int
-
-	rows.Next()
-	err = rows.Scan(&result)
+	err := db.c.QueryRow(`SELECT COUNT(*) FROM Followers WHERE followed_id = ?`, followed_id).Scan(&result)
 	if err != nil {
 		return 0, err
 	}

@@ -94,9 +94,6 @@ func (db *appdbimpl) GetLikeAmount(photo_id uint64) (int, error) {
 	var like_count int
 	err := db.c.QueryRow(`SELECT COUNT(*) FROM Likes
 		WHERE photo_id = ?`, photo_id).Scan(&like_count)
-	if errors.Is(err, sql.ErrNoRows) {
-		return like_count, nil
-	}
 	if err != nil {
 		return 0, err
 	}
@@ -121,6 +118,9 @@ func (db *appdbimpl) GetLikes(photo_id uint64) ([]string, error) {
 		err = rows.Scan(&likeId)
 		if err != nil {
 			return nil, err
+		}
+		if rows.Err() != nil {
+			return nil, rows.Err()
 		}
 
 		like, err := db.Get_username_from_userId(likeId)
