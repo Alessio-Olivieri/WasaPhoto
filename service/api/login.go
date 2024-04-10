@@ -29,16 +29,18 @@ func (rt *_router) login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 
 	// Send the response to the client
 	w.Header().Set("Content-Type", "application/json")
+	if created {
+		w.WriteHeader(http.StatusCreated)
+		message = message + "User created\n"
+	} else {
+		w.WriteHeader(http.StatusOK)
+		message = message + "User already exists\n"
+	}
 	err = json.NewEncoder(w).Encode(response) // json.encode writes the JSON encoding of response to w
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "error parsing response")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-	}
-	if created {
-		w.WriteHeader(http.StatusCreated)
-	} else {
-		w.WriteHeader(http.StatusOK)
 	}
 
 	ctx.Logger.Info(message+"sent UserID ", response["userId"], "to the client")
