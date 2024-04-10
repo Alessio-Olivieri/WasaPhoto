@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/Alessio-Olivieri/wasaProject/service/components/schemas"
 )
@@ -20,7 +19,6 @@ func (db *appdbimpl) retrievePosts(rows *sql.Rows) ([]schemas.Post, error) {
 		if rows.Err() != nil {
 			return nil, err
 		}
-		fmt.Println("DATABASE: post retrieved", post.PostId, post.Username, post.UserId, post.Text, post.Date, post.IsLiked)
 
 		// get the usernames of who putted like
 		post.Likes, err = db.GetLikes(post.PostId)
