@@ -8,10 +8,7 @@ func (db *appdbimpl) Get_user_photos(user_id_request uint64, user_id_profile uin
 	var postList []schemas.Post
 	var totalPosts int
 	// retrieve the total number of posts
-	err := db.c.QueryRow(`SELECT count(*) FROM 
-		photos INNER JOIN users ON users.user_id = photos.user_id
-		WHERE 
-		photos.user_id IN (SELECT followed_id FROM Followers WHERE follower_id = ?)`, user_id_request).Scan(&totalPosts)
+	err := db.c.QueryRow(`SELECT count(*) FROM photos WHERE user_id = ?`, user_id_profile).Scan(&totalPosts)
 	if err != nil {
 		return postList, 0, err
 	}

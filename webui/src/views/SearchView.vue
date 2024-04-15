@@ -58,36 +58,38 @@ export default {
 </script>
 
 <template>
-  <h2 class="alert alert-primary" v-if="message">{{ message }}</h2>
-    <div class="search-container">
-      <h2>Search.</h2>
-      <form @submit.prevent="search" class="search-form">
-        <label for="username" class="search-form__label">User to search:</label>
-        <input
-          type="text"
-          id="username"
-          v-model="username"
-          required
-          minlength="3"
-          maxlength="20"
-          class="search-form__input"
-        />
-        <button type="submit" class="search-form__button">
-          Search <svg class="feather">
-            <use href="/feather-sprite-v4.29.0.svg#search" />
-          </svg>
-        </button>
-      </form>
-      <div v-if="search_result != null" class="search-results">
-        <p>Search completed</p>
-        <ul class="search-results__list">
-          <li v-for="username in search_result" :key="username" class="search-results__item">
-            <router-link :to="'/users/' + username">{{ username }}</router-link>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </template>
+	<h2 class="alert alert-primary" v-if="message">{{ message }}</h2>
+	<div class="search-container">
+		<h2>Search.</h2>
+		<form @submit.prevent="search" class="search-form">
+			<label for="username" class="search-form__label">User to search:</label>
+			<input
+				type="text"
+				id="username"
+				v-model="username"
+				required
+				minlength="3"
+				maxlength="20"
+				class="search-form__input"
+				/>
+			<button type="submit" class="search-form__button">
+				Search 
+				<svg class="feather">
+					<use href="/feather-sprite-v4.29.0.svg#search" />
+				</svg>
+			</button>
+		</form>
+		<div v-if="search_result != null" class="search-results">
+			<p>Search completed</p>
+			<ul class="search-results__list">
+				<li v-for="username in search_result" :key="username" class="search-results__item">
+					<router-link :to="'/users/' + username">{{ username }}</router-link>
+				</li>
+			</ul>
+		</div>
+	</div>
+</template>
+
   
   <style scoped>
   .search-container {

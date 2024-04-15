@@ -25,6 +25,9 @@ export default {
 		async refresh() {
 			console.log("Refreshing data...");
 			this.profile_data = await this.$axios.get(`/users/${this.$route.params.username}`, {
+					params: {
+						page: this.page_number
+					},
                     headers: {
                         'Authorization': authToken,
                     },
@@ -383,105 +386,110 @@ export default {
 </script>
 
 <template>
-	<div>
-	  <div v-if="loggedIn" class="profile-container">
-		<h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
-		<h1>{{ $route.params.username }}</h1>
-		<div v-if="isItMe">
-		  <router-link to="/settings" class="profile-settings">
-			<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#settings"/></svg>
-			Profile settings
-		  </router-link>
-		</div>
-		<p>This is the profile page of {{ $route.params.username }}</p>
-		<p v-if="message != ''">Error: {{ message }} </p>
-		<div v-if="profile_data">
-			<div v-if="!isItMe">
-				<button v-if="!profile_data.data.is_following && !profile_data.data.is_banned" @click="follow()" class="btn btn-dark">Follow</button>
-				<button v-if="profile_data.data.is_following" @click="unfollow()" class="btn btn-dark">Unfollow</button>
-				<button v-if="!profile_data.data.is_banned" @click="ban" class="btn btn-dark">Ban</button>
-				<button v-if="profile_data.data.is_banned" @click="unban" class="btn btn-dark">Unban</button>
-			</div>
-			<p class="followers-count">Number of followers: {{profile_data.data.followers_count}}</p>
-			<button v-if="!show_followers" @click="(show_followers = true)" class="btn btn-dark">Show followers</button>
-			<button v-if="show_followers" @click="(show_followers = false)" class="btn btn-dark">Hide followers</button>
-			<p v-if="show_followers" class="followers-list">Followers:
-				<label v-for="username in profile_data.data.followers" :key="username">
-					<router-link :to="'/users/' + username"> @{{ username }} </router-link>
-				</label>
-			</p>
-			<div v-if="profile_data.data.posts" class="post-container">
-				<h3 class="photos-heading">Photos:</h3>
-				<div class="btn-group btn-group-toggle" data-toggle="buttons">
-					<label v-if="page_number!=0" class="btn btn-dark" @click="getProfile(page_number-1)">
-						previous page
-					</label>
-					<label v-if="page_number!=0 && page_number-3>=0" class="btn btn-dark" @click="getProfile(page_number-3)">
-						{{ page_number-3 }}
-					</label>
-					<label v-if="page_number!=0 && page_number-2>=0" class="btn btn-dark" @click="getProfile(page_number-2)">
-						{{ page_number-2 }}
-					</label>
-					<label v-if="page_number!=0 && page_number-1>=0" class="btn btn-dark" @click="getProfile(page_number-1)">
-						{{ page_number-1 }}
-					</label>
-					<label class="btn btn-dark active">{{ page_number }} </label>
-					<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
-						{{ page_number+1 }}
-					</label>
-					<label v-if="page_number+2<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+2)">
-						{{ page_number+2 }}
-					</label>
-					<label v-if="page_number+3<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+3)">
-						{{ page_number+3 }}
-					</label>
-					<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
-						next page
-					</label>
-				</div>
-				<div v-for="(post, post_index) in profile_data.data.posts" :key="post.post_id" class="post">
-			  <div class="post-content">
-				<p v-if="post.content != 'null'">{{ post.content }}</p>
-				<p>Likes: {{ post.likes_count }}</p>
-				<button v-if="!post.is_liked" @click="likePost(post)" class="btn btn-dark btn-like">Like</button>
-				<button v-if="post.is_liked" @click="unLikePost(post)" class="btn btn-dark btn-like">un-Like</button>
-			  </div>
-			  	<img v-if="post.image" :src="`data:image/png;base64,${post.image}`" alt="Post Image" class="post-image">
-			  	<button v-if="isItMe" @click="removePost(post_index)" class="btn btn-dark btn-delete">Delete Post</button>
-				<Comments :post=post></Comments>
-			  </div>
-		  </div>
-		  <div class="btn-group btn-group-toggle" data-toggle="buttons">
-				<label v-if="page_number!=0" class="btn btn-dark" @click="getProfile(page_number-1)">
-					previous page
-				</label>
-				<label v-if="page_number!=0 && page_number-3>=0" class="btn btn-dark" @click="getProfile(page_number-3)">
-					{{ page_number-3 }}
-				</label>
-				<label v-if="page_number!=0 && page_number-2>=0" class="btn btn-dark" @click="getProfile(page_number-2)">
-					{{ page_number-2 }}
-				</label>
-				<label v-if="page_number!=0 && page_number-1>=0" class="btn btn-dark" @click="getProfile(page_number-1)">
-					{{ page_number-1 }}
-				</label>
-				<label class="btn btn-dark active">{{ page_number }} </label>
-				<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
-					{{ page_number+1 }}
-				</label>
-				<label v-if="page_number+2<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+2)">
-					{{ page_number+2 }}
-				</label>
-				<label v-if="page_number+3<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+3)">
-					{{ page_number+3 }}
-				</label>
-				<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
-					next page
-				</label>
-			</div>
-		</div>
-	  </div>
+  <div>
+    <div v-if="loggedIn" class="profile-container">
+    <h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
+	<h1>{{ $route.params.username }}</h1>
+	<div v-if="isItMe">
+		<router-link to="/settings" class="profile-settings">
+		<svg class="feather">
+			<use href="/feather-sprite-v4.29.0.svg#settings"/>
+		</svg>
+		Profile settings
+		</router-link>
 	</div>
-  </template>
+	<p>This is the profile page of {{ $route.params.username }}</p>
+	<p v-if="message != ''">Error: {{ message }} </p>
+	<div v-if="profile_data">
+		<div v-if="!isItMe">
+		<button v-if="!profile_data.data.is_following && !profile_data.data.is_banned" @click="follow()" class="btn btn-dark">Follow</button>
+		<button v-if="profile_data.data.is_following" @click="unfollow()" class="btn btn-dark">Unfollow</button>
+		<button v-if="!profile_data.data.is_banned" @click="ban" class="btn btn-dark">Ban</button>
+		<button v-if="profile_data.data.is_banned" @click="unban" class="btn btn-dark">Unban</button>
+		</div>
+		<p class="followers-count">Number of followers: {{profile_data.data.followers_count}}</p>
+		<button v-if="!show_followers && profile_data.data.followers_count>0" @click="(show_followers = true)" class="btn btn-dark">Show followers</button>
+		<button v-if="show_followers" @click="(show_followers = false)" class="btn btn-dark">Hide followers</button>
+		<p v-if="show_followers" class="followers-list">
+		Followers:
+		<label v-for="username in profile_data.data.followers" :key="username">
+			<router-link :to="'/users/' + username"> @{{ username }} </router-link>
+		</label>
+		</p>
+		<div v-if="profile_data.data.posts.length" class="post-container">
+		<h3 class="photos-heading">Photos:</h3>
+		<div v-if="profile_data.data.number_of_pages!=0" class="btn-group btn-group-toggle" data-toggle="buttons">
+			<label v-if="page_number!=0" class="btn btn-dark" @click="getProfile(page_number-1)">
+			previous page
+			</label>
+			<label v-if="page_number!=0 && page_number-3>=0" class="btn btn-dark" @click="getProfile(page_number-3)">
+			{{ page_number-3 }}
+			</label>
+			<label v-if="page_number!=0 && page_number-2>=0" class="btn btn-dark" @click="getProfile(page_number-2)">
+			{{ page_number-2 }}
+			</label>
+			<label v-if="page_number!=0 && page_number-1>=0" class="btn btn-dark" @click="getProfile(page_number-1)">
+			{{ page_number-1 }}
+			</label>
+			<label class="btn btn-dark active">{{ page_number }} </label>
+			<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
+			{{ page_number+1 }}
+			</label>
+			<label v-if="page_number+2<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+2)">
+			{{ page_number+2 }}
+			</label>
+			<label v-if="page_number+3<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+3)">
+			{{ page_number+3 }}
+			</label>
+			<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
+			next page
+			</label>
+		</div>
+		<div v-for="(post, post_index) in profile_data.data.posts" :key="post.post_id" class="post">
+			<div class="post-content">
+			<p v-if="post.content != 'null'">{{ post.content }}</p>
+			<p>Likes: {{ post.likes_count }}</p>
+			<button v-if="!post.is_liked" @click="likePost(post)" class="btn btn-dark btn-like">Like</button>
+			<button v-if="post.is_liked" @click="unLikePost(post)" class="btn btn-dark btn-like">un-Like</button>
+			</div>
+			<img v-if="post.image" :src="`data:image/png;base64,${post.image}`" alt="Post Image" class="post-image">
+			<button v-if="isItMe" @click="removePost(post_index)" class="btn btn-dark btn-delete">Delete Post</button>
+			<Comments :post=post></Comments>
+		</div>
+		</div>
+		<div v-if="profile_data.data.number_of_pages!=0" class="btn-group btn-group-toggle" data-toggle="buttons">
+		<label v-if="page_number!=0" class="btn btn-dark" @click="getProfile(page_number-1)">
+		previous page
+		</label>
+		<label v-if="page_number!=0 && page_number-3>=0" class="btn btn-dark" @click="getProfile(page_number-3)">
+		{{ page_number-3 }}
+		</label>
+		<label v-if="page_number!=0 && page_number-2>=0" class="btn btn-dark" @click="getProfile(page_number-2)">
+		{{ page_number-2 }}
+		</label>
+		<label v-if="page_number!=0 && page_number-1>=0" class="btn btn-dark" @click="getProfile(page_number-1)">
+		{{ page_number-1 }}
+		</label>
+		<label class="btn btn-dark active">{{ page_number }} </label>
+		<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
+		{{ page_number+1 }}
+		</label>
+		<label v-if="page_number+2<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+2)">
+		{{ page_number+2 }}
+		</label>
+		<label v-if="page_number+3<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+3)">
+		{{ page_number+3 }}
+		</label>
+		<label v-if="page_number+1<=profile_data.data.number_of_pages" class="btn btn-dark" @click="getProfile(page_number+1)">
+		next page
+		</label>
+		</div>
+	</div>
+	</div>
+</div>
+</template>
+  
+
   
   <style scoped>
   .profile-container {

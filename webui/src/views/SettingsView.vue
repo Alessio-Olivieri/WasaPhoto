@@ -59,30 +59,35 @@ export default{
 
 
 <template>
-    <div class="update-username">
-      <LoadingSpinner v-if="loading"></LoadingSpinner>
-      <div class="update-form">
-        <h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
-        <form @submit.prevent="Update_username" class="update-form__form">
-          <label for="username" class="update-form__label">Current username: {{ this.username }}</label>
-          <input
-            type="text"
-            id="new_username_box"
-            v-model="new_username"
-            required
-            minlength="3"
-            maxlength="20"
-            class="update-form__input"
-          />
-          <button type="submit" class="update-form__button">
-            Update username <svg class="feather">
-            </svg>
-          </button>
-        </form>
-        <p v-if="username_update_completed" class="update-message">Update completed</p>
-      </div>
-    </div>
-  </template>
+	<div class="update-username">
+		<LoadingSpinner v-if="loading"></LoadingSpinner>
+		<div class="update-form">
+			<h3 v-if="message != ''" class="alert alert-primary">{{ message }}</h3>
+			<form @submit.prevent="Update_username" class="update-form__form">
+				<label for="username" class="update-form__label">Current username: {{ this.username }}</label>
+				<input
+					type="text"
+					id="new_username_box"
+					v-model="new_username"
+					required
+					minlength="3"
+					maxlength="20"
+					class="update-form__input"
+					/>
+				<button type="submit" class="update-form__button">
+					Update username 
+					<svg class="feather">
+					</svg>
+				</button>
+			</form>
+			<p v-if="username_update_completed" class="update-message">Update completed</p>
+		</div>
+	</div>
+</template>
+
+
+
+
   
   <style scoped>
   .update-username {

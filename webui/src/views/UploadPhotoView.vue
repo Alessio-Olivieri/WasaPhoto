@@ -100,34 +100,35 @@ export default {
 </script>
 
 <template>
-    <div class="upload-container" style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 0 auto; max-width: 400px;">
-      <h2 class="alert alert-primary" v-if="message">{{ message }}</h2>
-      <div class="upload-form">
-        <h1>So... {{ this.authUser }}, you want to upload a picture?</h1>
-        <div class="form-group">
-          <label for="picture-text-box" class="form-label">Picture description:</label>
-          <textarea
-            class="form-control"
-            id="picture-text-box"
-            placeholder="Enter a description for your picture"
-            v-model="caption"
-          ></textarea>
-        </div>
-        <div class="form-group">
-          <input type="file" id="picture" accept=".png,.jpg,image/jpeg" @change="onFileChange" required/>
-          <button type="button" class="btn btn-primary" @click="uploadPicture">Upload Picture</button>
-        </div>
-      </div>
-      <div v-if="response_post != null" class="upload-results">
-        <h2>Image uploaded:</h2>
-        <p>User: {{ response_post.data.username }}</p>
-        <p v-if="response_post.data.content!='null'">Text: {{ response_post.data.content }}</p>
-        <p v-if="response_post.data.image!=null">
-          <img v-bind:src="dataURI" alt="Post Image" class="post-image"/>
-        </p>
-      </div>
-    </div>
-  </template>
+	<div class="upload-container" style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 0 auto; max-width: 400px;">
+		<h2 class="alert alert-primary" v-if="message">{{ message }}</h2>
+		<div class="upload-form">
+			<h1>So... {{ this.authUser }}, you want to upload a picture?</h1>
+			<div class="form-group">
+				<label for="picture-text-box" class="form-label">Picture description:</label>
+				<textarea
+					class="form-control"
+					id="picture-text-box"
+					placeholder="Enter a description for your picture"
+					v-model="caption"
+					></textarea>
+			</div>
+			<div class="form-group">
+				<input type="file" id="picture" accept=".png,.jpg,image/jpeg" @change="onFileChange" required/>
+				<button type="button" class="btn btn-primary" @click="uploadPicture">Upload Picture</button>
+			</div>
+		</div>
+		<div v-if="response_post != null" class="upload-results">
+			<h2>Image uploaded:</h2>
+			<p>User: {{ response_post.data.username }}</p>
+			<p v-if="response_post.data.content!='null'">Text: {{ response_post.data.content }}</p>
+			<p v-if="response_post.data.image!=null">
+				<img v-bind:src="dataURI" alt="Post Image" class="post-image"/>
+			</p>
+		</div>
+	</div>
+</template>
+
   
   <style>
   
