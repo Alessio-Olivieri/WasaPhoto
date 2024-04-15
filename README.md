@@ -86,6 +86,18 @@ If you want to launch the WebUI, open a new tab and launch:
 npm run dev
 ```
 
+## How to build (docker)
+### Build images
+```shell
+docker build -t wasaphoto-frontend:latest -f Dockerfile.frontend .
+docker build -t wasaphoto-backend:latest -f Dockerfile.backend .
+```
+### Run images
+```shell
+docker run -it --rm -p 3000:3000 wasaphoto-backend:latest
+docker run -it --rm -p 8080:80 wasaphoto-frontend:latest
+```
+
 ## Known issues
 
 ### Apple M1 / ARM: `failed to load config from`...
@@ -101,17 +113,7 @@ npm install
 exit
 # Now you can continue as indicated in "How to build/run"
 ```
-## How to build (docker)
-### Build images
-```shell
-docker build -t wasaphoto-frontend:latest -f Dockerfile.frontend .
-docker build -t wasaphoto-backend:latest -f Dockerfile.backend .
-```
-### Run images
-```shell
-docker run -it --rm -p 3000:3000 wasaphoto-backend:latest
-docker run -it --rm -p 8080:80 wasaphoto-frontend:latest
-```
+
 
 **Use these instructions only if you get an error. Do not use it if your build is OK**.
 
