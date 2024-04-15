@@ -31,7 +31,7 @@ For more information about vendoring:
 
 This repository contains the `webui/node_modules` directory with all dependencies for Vue.JS. You should commit the content of that directory and both `package.json` and `package-lock.json`.
 
-## How to set up a new project from this template
+## How to set modify this project
 
 You need to:
 
