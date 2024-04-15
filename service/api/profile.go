@@ -19,6 +19,20 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	var message string
 	message = message + "getUserProfile:\n"
 
+	// Get the page number from the URL
+	page_number, err := strconv.ParseInt(r.URL.Query().Get("page"), 10, 32)
+	if err != nil {
+		ctx.Logger.WithError(err).Error(message + "Error parsing page number")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if page_number < 0 {
+		ctx.Logger.WithError(err).Error(message + "page number can't be >0")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	message = message + "Page number: " + strconv.FormatInt(page_number, 10) + "\n"
+
 	// Extract the username from the path parameters
 	profile_username := ps.ByName("username")
 	if profile_username == "" {
@@ -93,13 +107,14 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	message = message + "Requesting user has not banned " + profile_username + "\n"
 
 	// retrieve photos of the user_profile
-	post_list, err := rt.db.Get_user_photos(ctx.UserId, userId_profile)
+	post_list, total_pages, err := rt.db.Get_user_photos(ctx.UserId, userId_profile, int(page_number))
 	if err != nil {
 		ctx.Logger.WithError(err).Error(message + "Error retrieving posts")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	response.Posts = post_list
+	response.Number_of_pages = total_pages
 	message = message + strconv.Itoa(len(post_list)) + " photos of " + profile_username + " retrieved successfully\n"
 
 	// create json response

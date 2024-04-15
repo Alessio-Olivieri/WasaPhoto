@@ -121,15 +121,15 @@ export default {
       <div v-if="response_post != null" class="upload-results">
         <h2>Image uploaded:</h2>
         <p>User: {{ response_post.data.username }}</p>
-        <p v-if="response_post.data.content">Text: {{ response_post.data.content }}</p>
+        <p v-if="response_post.data.content!='null'">Text: {{ response_post.data.content }}</p>
         <p v-if="response_post.data.image!=null">
-          <img v-bind:src="dataURI" alt="Post Image" />
+          <img v-bind:src="dataURI" alt="Post Image" class="post-image"/>
         </p>
       </div>
     </div>
   </template>
   
-  <style scoped>
+  <style>
   
     .upload-form {
       display: flex;
@@ -162,5 +162,9 @@ export default {
       border-top: 1px solid #ddd; /* Add top border */
       padding-top: 10px; /* Add padding after border */
     }
+    .post-image {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
   </style>
   

@@ -14,4 +14,5 @@ type GetUserProfile struct {
 	IsBanned        bool     `json:"is_banned"`
 	IsFollowing     bool     `json:"is_following"`
 	Posts           []Post   `json:"posts"`
+	Number_of_pages int      `json:"number_of_pages"`
 }

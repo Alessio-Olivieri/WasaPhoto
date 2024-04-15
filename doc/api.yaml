@@ -85,14 +85,7 @@ paths:
 
   /stream:
     parameters:
-      - name: page
-        in: query
-        description: the offset of posts of the Stream
-        required: true
-        schema:
-          type: integer
-          maximum: 999999999
-          minimum: 0
+      - $ref: '#/components/parameters/page'
     get:
       security:
         - bearerAuth: []
@@ -121,6 +114,7 @@ paths:
   /users/{username}:  
     parameters:
       - $ref: '#/components/parameters/username_path' 
+      - $ref: '#/components/parameters/page'
     get:
       security:
         - bearerAuth: []
@@ -470,7 +464,17 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Username'
-    
+
+    page:
+      name: page
+      in: query
+      description: the offset of posts of profile or streams
+      required: true
+      schema:
+        type: integer
+        maximum: 999999999
+        minimum: 0
+  
         
   responses:
     BadRequestError:
@@ -545,6 +549,8 @@ components:
           description: |
             True if the user of the profile is followed by the current user
           type: boolean
+        number_of_pages:
+          $ref: '#/components/schemas/Numerical'
         posts:
           description: |
             List of the posts of the user

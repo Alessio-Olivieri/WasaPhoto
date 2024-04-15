@@ -82,7 +82,7 @@ type AppDatabase interface {
 	// Make_photo creates a new photo in the database
 	Make_photo(user_id uint64, caption string, picture multipart.File) (schemas.Post, error)
 	// Get_photo returns the photos of the user with the specified id, if the user requesting is banned return an error
-	Get_user_photos(user_id_request uint64, user_id_profile uint64) ([]schemas.Post, error)
+	Get_user_photos(user_id_request uint64, user_id_profile uint64, page_number int) ([]schemas.Post, int, error)
 	// exists_photo returns true if the photo with the specified id exists, otherwise false
 	Exists_photo(photo_id uint64) (bool, error)
 	// delete_photo deletes the photo with the specified id, if the user requesting is not owner of photo return an error
