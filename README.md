@@ -1,3 +1,16 @@
+## What is this?
+This is the website made for the course of Web And Software Architecture to which i scored [30L/30](https://en.wikipedia.org/wiki/Academic_grading_in_Italy#University).
+The website provides the following functions according to the [homework specifications](https://github.com/Alessio-Olivieri/WasaPhoto/blob/master/Homework%20specifications/Project%20specifications.pdf):
+* Login
+* Change username
+* Upload/Delete photo
+* Like/Unlike photo
+* Comment/Uncomment photo
+* Follow/Unfollow user
+* Ban/Unban user
+* User Profile
+
+
 ## Project structure
 
 * `cmd/` contains all executables; Go programs here should only do "executable-stuff", like reading options from the CLI/env, etc.
@@ -30,18 +43,6 @@ For more information about vendoring:
 ## Node/NPM vendoring
 
 This repository contains the `webui/node_modules` directory with all dependencies for Vue.JS. You should commit the content of that directory and both `package.json` and `package-lock.json`.
-
-## How to set modify this project
-
-You need to:
-
-* Change the Go module path to your module path in `go.mod`, `go.sum`, and in `*.go` files around the project
-* Rewrite the API documentation `doc/api.yaml`
-* If no web frontend is expected, remove `webui` and `cmd/webapi/register-webui.go`
-* If no cronjobs or health checks are needed, remove them from `cmd/`
-* Update top/package comment inside `cmd/webapi/main.go` to reflect the actual project usage, goal, and general info
-* Update the code in `run()` function (`cmd/webapi/main.go`) to connect to databases or external resources
-* Write API code inside `service/api`, and create any further package inside `service/` (or subdirectories)
 
 ## How to build
 
